@@ -12,6 +12,20 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["php", "artisan", "queue:work", "--sleep=1", "--tries=1", "--timeout=120"]
+    env_file:
+      - .env.production
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
   web:
     image: nginx:1.27-alpine
     depends_on:

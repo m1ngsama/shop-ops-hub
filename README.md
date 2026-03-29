@@ -23,27 +23,37 @@ This repository turns that profile into a working demo product that matches the 
 
 ## What the app does
 
-Shop Ops Hub is a lightweight operations cockpit for marketplace teams:
+Shop Ops Hub is an authenticated internal operations workspace for marketplace teams:
 
+- Public landing page and dedicated admin sign-in flow.
+- Protected `/admin` workspace for dashboard, catalog, channels, and orders.
 - Product master with supplier, target pricing, fulfillment fee, and safety stock.
 - Marketplace listings across Amazon US, Walmart US, and TikTok Shop US.
 - Inventory batches with replenishment alerts.
 - Order ledger with revenue, ad spend, channel fee, and gross profit.
 - Dashboard metrics cached through Laravel cache.
-- Mock sync endpoints that simulate marketplace deltas through service adapters.
+- Token-protected API routes for metrics and channel sync.
+- Queued connector jobs processed by a worker service.
 
 ## Main routes
 
-- `/` dashboard
-- `/products` product master
-- `/products/{id}` SKU detail
-- `/channels` channel adapters and manual sync
-- `/orders` order ledger
+- `/` public landing page
+- `/login` admin sign-in
+- `/admin` private dashboard
+- `/admin/products` product master
+- `/admin/products/{id}` SKU detail
+- `/admin/channels` channel adapters and manual sync
+- `/admin/orders` order ledger
 
 ## API routes
 
 - `GET /api/dashboard/metrics`
 - `POST /api/channels/{channel}/sync`
+
+Both API routes require either:
+
+- An authenticated admin session.
+- A bearer token matching `SHOP_OPS_API_TOKEN`.
 
 ## Local development
 
@@ -56,11 +66,17 @@ docker run --rm -v "$PWD":/app -w /app composer:2 php artisan test
 
 The checked-in `.env` uses SQLite for low-friction local verification. Production uses MySQL and Redis through `deploy/production.env.example`.
 
+Default seeded admin credentials are driven by config:
+
+- `SHOP_OPS_ADMIN_EMAIL` default: `ops@m1ng.space`
+- `SHOP_OPS_ADMIN_PASSWORD` default: `shop-ops-demo`
+
 ## Production architecture
 
-Production uses Docker Compose with four services:
+Production uses Docker Compose with five services:
 
 - `app`: PHP-FPM Laravel container
+- `worker`: Laravel queue worker for connector jobs
 - `web`: Nginx container serving the Laravel public directory
 - `mysql`: MySQL 8.4
 - `redis`: Redis 7
@@ -87,3 +103,9 @@ docker compose --env-file .env.production exec app php artisan migrate --force -
 ```
 
 On the target host, install the provided host Nginx config and provision a certificate for `shop.m1ng.space`.
+
+Important production settings:
+
+- Set `APP_FORCE_HTTPS=true` behind the reverse proxy.
+- Set `QUEUE_CONNECTION=redis` so sync jobs run through the worker.
+- Set strong values for `SHOP_OPS_ADMIN_PASSWORD` and `SHOP_OPS_API_TOKEN`.

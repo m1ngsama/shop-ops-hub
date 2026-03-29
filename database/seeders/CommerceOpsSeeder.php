@@ -31,10 +31,12 @@ class CommerceOpsSeeder extends Seeder
         Schema::enableForeignKeyConstraints();
 
         User::query()->updateOrCreate(
-            ['email' => 'ops@m1ng.space'],
+            ['email' => config('shop_ops.admin_email')],
             [
                 'name' => 'Ops Analyst',
-                'password' => Hash::make('shop-ops-demo'),
+                'role' => 'admin',
+                'is_active' => true,
+                'password' => Hash::make(config('shop_ops.admin_password')),
             ]
         );
 
@@ -238,6 +240,7 @@ class CommerceOpsSeeder extends Seeder
 
         SyncRun::query()->create([
             'channel_id' => $channels['amazon_us']->id,
+            'user_id' => User::query()->where('email', config('shop_ops.admin_email'))->value('id'),
             'trigger_type' => 'manual',
             'status' => 'completed',
             'processed_count' => 7,
@@ -249,6 +252,7 @@ class CommerceOpsSeeder extends Seeder
 
         SyncRun::query()->create([
             'channel_id' => $channels['walmart_us']->id,
+            'user_id' => User::query()->where('email', config('shop_ops.admin_email'))->value('id'),
             'trigger_type' => 'scheduler',
             'status' => 'completed',
             'processed_count' => 4,

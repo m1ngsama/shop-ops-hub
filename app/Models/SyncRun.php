@@ -12,6 +12,7 @@ class SyncRun extends Model
 
     protected $fillable = [
         'channel_id',
+        'user_id',
         'trigger_type',
         'status',
         'processed_count',
@@ -29,5 +30,10 @@ class SyncRun extends Model
     public function channel(): BelongsTo
     {
         return $this->belongsTo(Channel::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

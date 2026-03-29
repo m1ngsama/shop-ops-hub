@@ -7,6 +7,7 @@ use App\Services\ChannelSyncService;
 use App\Services\DashboardMetricsService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class ChannelController extends Controller
 {
@@ -14,19 +15,23 @@ class ChannelController extends Controller
     {
         return view('channels.index', [
             'channels' => Channel::query()
-                ->with(['syncRuns' => fn ($query) => $query->latest(), 'listings'])
+                ->with([
+                    'syncRuns' => fn ($query) => $query->latest()->with('user'),
+                    'listings',
+                ])
+                ->withCount(['listings', 'orders'])
                 ->orderBy('name')
                 ->get(),
             'performance' => $dashboardMetricsService->channelPerformance()->keyBy('id'),
         ]);
     }
 
-    public function sync(Channel $channel, ChannelSyncService $channelSyncService): RedirectResponse
+    public function sync(Request $request, Channel $channel, ChannelSyncService $channelSyncService): RedirectResponse
     {
-        $run = $channelSyncService->sync($channel);
+        $run = $channelSyncService->queue($channel, 'manual', $request->user());
 
         return redirect()
-            ->route('channels.index')
-            ->with('status', "{$channel->name} sync completed with {$run->processed_count} updates.");
+            ->route('admin.channels.index')
+            ->with('status', "{$channel->name} sync queued as run #{$run->id}.");
     }
 }

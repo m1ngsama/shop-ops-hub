@@ -17,12 +17,16 @@ class DashboardController extends Controller
     ): View {
         return view('dashboard', [
             'summary' => $dashboardMetricsService->summary(),
+            'revenueTrend' => $dashboardMetricsService->revenueTrend(),
+            'orderStatusBreakdown' => $dashboardMetricsService->orderStatusBreakdown(),
+            'categoryPerformance' => $dashboardMetricsService->categoryPerformance(),
+            'channelHealth' => $dashboardMetricsService->channelHealth(),
             'channels' => $dashboardMetricsService->channelPerformance(),
             'topProducts' => $dashboardMetricsService->topProducts(),
             'lowStockAlerts' => $replenishmentService->recommendations()->take(5),
             'products' => Product::query()->with(['supplier', 'inventoryBatches', 'listings'])->orderBy('name')->take(6)->get(),
             'recentOrders' => Order::query()->with(['product', 'channel'])->latest('ordered_at')->take(8)->get(),
-            'recentSyncRuns' => SyncRun::query()->with('channel')->latest()->take(6)->get(),
+            'recentSyncRuns' => SyncRun::query()->with(['channel', 'user'])->latest()->take(6)->get(),
         ]);
     }
 }
