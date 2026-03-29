@@ -4,6 +4,8 @@
     @php
         $averageScore = round((float) ($product->listings->avg('performance_score') ?? 0), 1);
         $averageConversion = round((float) ($product->listings->avg('conversion_rate') ?? 0), 1);
+        $reviewCount = (int) $product->listings->sum('review_count');
+        $channelCoverage = $product->listings->pluck('channel.name')->implode(' / ');
     @endphp
 
     <section class="detail-hero">
@@ -35,6 +37,42 @@
                 <a class="secondary-button" href="{{ route('storefront.catalog') }}">返回目录</a>
             </form>
         </div>
+    </section>
+
+    <section class="feature-grid feature-grid-4">
+        <article class="feature-card compact-card">
+            <span class="surface-tag">供给</span>
+            <h2>供应质量</h2>
+            <p>{{ $product->supplier?->quality_score ?? '--' }} 分 · {{ $product->supplier?->name ?? '待分配' }}</p>
+        </article>
+        <article class="feature-card compact-card">
+            <span class="surface-tag">渠道</span>
+            <h2>刊登覆盖</h2>
+            <p>{{ $product->listings->count() }} 个渠道 · {{ $channelCoverage }}</p>
+        </article>
+        <article class="feature-card compact-card">
+            <span class="surface-tag">口碑</span>
+            <h2>评价规模</h2>
+            <p>{{ $reviewCount }} 条评价 · 表现分 {{ number_format($averageScore, 1) }}</p>
+        </article>
+        <article class="feature-card compact-card">
+            <span class="surface-tag">执行</span>
+            <h2>采购判断</h2>
+            <p>{{ $product->availableInventory() > $product->safety_stock ? '库存安全，可加快试单。' : '库存偏紧，应先评估补货。' }}</p>
+        </article>
+    </section>
+
+    <section class="editorial-band">
+        <article class="editorial-card editorial-card-strong">
+            <p class="hero-kicker">经营判断</p>
+            <h2>{{ $product->marketplace_focus }}</h2>
+            <p>{{ $product->selling_points }}</p>
+        </article>
+        <article class="editorial-card">
+            <span class="surface-tag">当前建议</span>
+            <strong>{{ $product->lead_time_days <= 18 ? '适合快速试投与组合陈列' : '更适合计划性备货与节奏化投放' }}</strong>
+            <p>结合交期、库存与渠道覆盖，先在高匹配场景下做小批量验证，再决定是否扩量。</p>
+        </article>
     </section>
 
     <section class="detail-layout">

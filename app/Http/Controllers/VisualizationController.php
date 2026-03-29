@@ -18,8 +18,11 @@ class VisualizationController extends Controller
         return view('insights.index', [
             'summary' => $dashboardMetricsService->summary(),
             'financialTrend' => $dashboardMetricsService->financialTrend(),
+            'profitBreakdown' => $dashboardMetricsService->profitBreakdown(),
             'orderStatusBreakdown' => $dashboardMetricsService->orderStatusBreakdown(),
             'channelPerformance' => $dashboardMetricsService->channelPerformance(),
+            'channelProfitability' => $dashboardMetricsService->channelProfitability(),
+            'inventoryCoverage' => $dashboardMetricsService->inventoryCoverage(),
             'topProducts' => $dashboardMetricsService->topProducts(),
             'listingPerformance' => Listing::query()
                 ->with(['product', 'channel'])

@@ -153,6 +153,105 @@ class DashboardMetricsService
             ->get();
     }
 
+    public function profitBreakdown(): array
+    {
+        return Cache::remember('dashboard:profit-breakdown', now()->addMinutes(5), function (): array {
+            $row = Order::query()
+                ->join('products', 'orders.product_id', '=', 'products.id')
+                ->selectRaw('COALESCE(SUM(orders.sale_price * orders.quantity), 0) as revenue')
+                ->selectRaw('COALESCE(SUM(products.cost_price * orders.quantity), 0) as product_cost')
+                ->selectRaw('COALESCE(SUM(orders.ad_spend), 0) as ad_spend')
+                ->selectRaw('COALESCE(SUM(orders.channel_fee), 0) as channel_fee')
+                ->first();
+
+            $revenue = (float) ($row->revenue ?? 0);
+            $productCost = (float) ($row->product_cost ?? 0);
+            $adSpend = (float) ($row->ad_spend ?? 0);
+            $channelFee = (float) ($row->channel_fee ?? 0);
+            $grossProfit = $revenue - $productCost - $adSpend - $channelFee;
+
+            return [
+                'revenue' => round($revenue, 2),
+                'product_cost' => round($productCost, 2),
+                'ad_spend' => round($adSpend, 2),
+                'channel_fee' => round($channelFee, 2),
+                'gross_profit' => round($grossProfit, 2),
+            ];
+        });
+    }
+
+    public function channelProfitability(): Collection
+    {
+        return Channel::query()
+            ->leftJoin('orders', 'channels.id', '=', 'orders.channel_id')
+            ->leftJoin('products', 'orders.product_id', '=', 'products.id')
+            ->select(
+                'channels.id',
+                'channels.code',
+                'channels.name',
+                'channels.marketplace',
+                'channels.region'
+            )
+            ->selectRaw('COUNT(orders.id) as order_count')
+            ->selectRaw('COALESCE(SUM(orders.quantity), 0) as units_sold')
+            ->selectRaw('COALESCE(SUM(orders.sale_price * orders.quantity), 0) as revenue')
+            ->selectRaw('COALESCE(SUM(products.cost_price * orders.quantity), 0) as product_cost')
+            ->selectRaw('COALESCE(SUM(orders.ad_spend), 0) as ad_spend')
+            ->selectRaw('COALESCE(SUM(orders.channel_fee), 0) as channel_fee')
+            ->selectRaw('COALESCE(SUM((orders.sale_price * orders.quantity) - (products.cost_price * orders.quantity) - orders.ad_spend - orders.channel_fee), 0) as gross_profit')
+            ->groupBy('channels.id', 'channels.code', 'channels.name', 'channels.marketplace', 'channels.region')
+            ->orderByDesc('gross_profit')
+            ->get()
+            ->map(function ($channel): object {
+                $revenue = (float) $channel->revenue;
+                $channel->margin_rate = $revenue > 0 ? round((((float) $channel->gross_profit) / $revenue) * 100, 1) : 0.0;
+
+                return $channel;
+            });
+    }
+
+    public function inventoryCoverage(): Collection
+    {
+        return Product::query()
+            ->with(['supplier', 'inventoryBatches' => fn ($query) => $query->orderBy('inbound_eta')])
+            ->where('status', 'active')
+            ->orderBy('name')
+            ->get()
+            ->map(function (Product $product): array {
+                $availableUnits = $product->availableInventory();
+                $estimatedDailyBurn = max(round($product->safety_stock / 30, 1), 1);
+                $coverDays = round($availableUnits / $estimatedDailyBurn, 1);
+                $inboundBatch = $product->inventoryBatches
+                    ->first(fn ($batch): bool => $batch->quantity_inbound > 0 && $batch->inbound_eta !== null);
+                $inboundDays = $inboundBatch?->inbound_eta
+                    ? max(now()->startOfDay()->diffInDays($inboundBatch->inbound_eta, false), 0)
+                    : null;
+                $coverageGap = round($coverDays - $product->lead_time_days, 1);
+
+                return [
+                    'product' => $product,
+                    'available_units' => $availableUnits,
+                    'estimated_daily_burn' => $estimatedDailyBurn,
+                    'cover_days' => $coverDays,
+                    'inbound_eta' => $inboundBatch?->inbound_eta,
+                    'inbound_days' => $inboundDays,
+                    'coverage_gap' => $coverageGap,
+                    'risk' => $coverDays < $product->lead_time_days
+                        ? 'danger'
+                        : ($coverDays < ($product->lead_time_days + 7) ? 'warning' : 'healthy'),
+                ];
+            })
+            ->sortBy([
+                fn (array $item): int => match ($item['risk']) {
+                    'danger' => 0,
+                    'warning' => 1,
+                    default => 2,
+                },
+                fn (array $item): float => $item['cover_days'],
+            ])
+            ->values();
+    }
+
     public function channelHealth(): Collection
     {
         $performance = $this->channelPerformance()->keyBy('id');

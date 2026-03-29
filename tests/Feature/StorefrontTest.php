@@ -20,6 +20,7 @@ class StorefrontTest extends TestCase
         $response->assertOk();
         $response->assertSee('商品目录');
         $response->assertSee('修护发膜');
+        $response->assertSee('过滤商品');
     }
 
     public function test_guest_can_add_product_to_selection_plan(): void
@@ -41,5 +42,17 @@ class StorefrontTest extends TestCase
             ->assertOk()
             ->assertSee('意向清单')
             ->assertSee($product->name);
+    }
+
+    public function test_storefront_home_highlights_comparison_and_curated_collections(): void
+    {
+        $this->seed(CommerceOpsSeeder::class);
+
+        $response = $this->get('/');
+
+        $response->assertOk();
+        $response->assertSee('场景组合');
+        $response->assertSee('商品比较');
+        $response->assertSee('轻健身与出行组合');
     }
 }

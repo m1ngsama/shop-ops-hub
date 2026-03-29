@@ -15,6 +15,8 @@
         $syncStatusMap = ['queued' => '排队中', 'running' => '执行中', 'completed' => '已完成', 'failed' => '失败'];
         $syncToneMap = ['queued' => 'warning', 'running' => 'info', 'completed' => 'success', 'failed' => 'danger'];
         $triggerMap = ['manual' => '手动', 'api' => '接口', 'scheduler' => '调度'];
+        $coverageMap = ['healthy' => '安全', 'warning' => '注意', 'danger' => '风险'];
+        $coverageToneMap = ['healthy' => 'success', 'warning' => 'warning', 'danger' => 'danger'];
 
         $financialMax = max((float) $financialTrend->max('revenue'), (float) $financialTrend->max('profit'), 1);
         $pointDivisor = max($financialTrend->count() - 1, 1);
@@ -51,12 +53,33 @@
             ->implode(', ');
 
         $channelRevenueTotal = max((float) $channelPerformance->sum('revenue'), 1);
+        $breakdownBase = max((float) $profitBreakdown['revenue'], 1);
+        $breakdownSegments = collect([
+            ['label' => '货品成本', 'key' => 'product_cost', 'tone' => 'brand'],
+            ['label' => '广告花费', 'key' => 'ad_spend', 'tone' => 'warning'],
+            ['label' => '渠道费用', 'key' => 'channel_fee', 'tone' => 'info'],
+            ['label' => '毛利', 'key' => 'gross_profit', 'tone' => 'success'],
+        ])->map(function (array $segment) use ($profitBreakdown, $breakdownBase): array {
+            $value = (float) ($profitBreakdown[$segment['key']] ?? 0);
+
+            return [
+                'label' => $segment['label'],
+                'tone' => $segment['tone'],
+                'value' => round($value, 2),
+                'percentage' => round(($value / $breakdownBase) * 100, 1),
+            ];
+        });
+        $channelProfitBase = max((float) $channelProfitability->max('gross_profit'), 1);
     @endphp
 
-    <section class="metrics-grid metrics-grid-4">
+    <section class="metrics-grid">
         <article class="metric-card">
             <span>近 7 日销售额</span>
             <strong>${{ number_format($summary['weekly_revenue'], 2) }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>综合毛利率</span>
+            <strong>{{ number_format($summary['gross_margin_rate'], 1) }}%</strong>
         </article>
         <article class="metric-card">
             <span>平均客单</span>
@@ -69,6 +92,10 @@
         <article class="metric-card">
             <span>低库存风险</span>
             <strong>{{ $summary['low_stock_count'] }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>排队任务</span>
+            <strong>{{ $summary['queued_sync_runs'] }}</strong>
         </article>
     </section>
 
@@ -142,30 +169,65 @@
         <article class="panel insight-panel">
             <div class="panel-header">
                 <div>
-                    <p class="page-kicker">渠道贡献</p>
-                    <h2>渠道营收占比</h2>
+                    <p class="page-kicker">利润拆解</p>
+                    <h2>收入最终变成了什么</h2>
+                </div>
+            </div>
+
+            <div class="composition-shell">
+                <div class="composition-bar">
+                    @foreach ($breakdownSegments as $segment)
+                        <span class="composition-segment tone-{{ $segment['tone'] }}" style="width: {{ max($segment['percentage'], 4) }}%"></span>
+                    @endforeach
+                </div>
+
+                <div class="legend-list">
+                    @foreach ($breakdownSegments as $segment)
+                        <article class="legend-row">
+                            <div class="legend-main">
+                                <i class="legend-dot tone-{{ $segment['tone'] }}"></i>
+                                <strong>{{ $segment['label'] }}</strong>
+                            </div>
+                            <div class="row-meta">
+                                <span>${{ number_format($segment['value'], 2) }}</span>
+                                <span>{{ number_format($segment['percentage'], 1) }}%</span>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </div>
+        </article>
+
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">渠道盈利</p>
+                    <h2>哪些渠道是真的赚钱</h2>
                 </div>
             </div>
 
             <div class="share-stack">
-                @foreach ($channelPerformance as $channel)
-                    @php
-                        $share = ((float) $channel->revenue / $channelRevenueTotal) * 100;
-                    @endphp
+                @foreach ($channelProfitability as $channel)
                     <article class="share-row">
                         <div class="share-head">
                             <strong>{{ $channel->name }}</strong>
-                            <span>{{ number_format($share, 1) }}%</span>
+                            <span>{{ number_format((float) $channel->margin_rate, 1) }}%</span>
                         </div>
                         <div class="share-bar">
-                            <span style="width: {{ max($share, 6) }}%"></span>
+                            <span style="width: {{ max((((float) $channel->gross_profit / $channelProfitBase) * 100), 6) }}%"></span>
                         </div>
-                        <p class="table-subtext">{{ $channel->order_count }} 笔订单 · ${{ number_format((float) $channel->revenue, 2) }}</p>
+                        <p class="table-subtext">
+                            销售额 ${{ number_format((float) $channel->revenue, 2) }}
+                            · 毛利 ${{ number_format((float) $channel->gross_profit, 2) }}
+                            · {{ $channel->order_count }} 单
+                        </p>
                     </article>
                 @endforeach
             </div>
         </article>
+    </section>
 
+    <section class="panel-grid panel-grid-2">
         <article class="panel insight-panel">
             <div class="panel-header">
                 <div>
@@ -202,33 +264,38 @@
                 @endforeach
             </div>
         </article>
-    </section>
 
-    <section class="panel-grid panel-grid-2">
         <article class="panel insight-panel">
             <div class="panel-header">
                 <div>
-                    <p class="page-kicker">补货风险</p>
-                    <h2>低库存优先级</h2>
+                    <p class="page-kicker">库存覆盖</p>
+                    <h2>库存还能撑多久</h2>
                 </div>
             </div>
 
-            <div class="row-list">
-                @foreach ($inventoryRisks as $risk)
-                    <article class="row-card">
-                        <div class="row-main">
-                            <strong>{{ $risk['product']->name }}</strong>
-                            <p>{{ $risk['product']->sku }} · 安全库存 {{ $risk['product']->safety_stock }} · 交期 {{ $risk['product']->lead_time_days }} 天</p>
+            <div class="legend-list">
+                @foreach ($inventoryCoverage as $item)
+                    <article class="legend-row">
+                        <div class="legend-main">
+                            <strong>{{ $item['product']->name }}</strong>
+                            <span class="table-subtext">{{ $item['product']->sku }} · 日均消耗估值 {{ number_format($item['estimated_daily_burn'], 1) }}</span>
                         </div>
                         <div class="row-meta">
-                            <span class="status-chip tone-warning">缺口 {{ $risk['gap'] }}</span>
-                            <span>可售 {{ $risk['available_units'] }}</span>
+                            <span class="status-chip tone-{{ $coverageToneMap[$item['risk']] ?? 'neutral' }}">{{ $coverageMap[$item['risk']] ?? $item['risk'] }}</span>
+                            <span>{{ number_format($item['cover_days'], 1) }} 天</span>
+                        </div>
+                        <div class="coverage-meta">
+                            <span>交期 {{ $item['product']->lead_time_days }} 天</span>
+                            <span>缺口/冗余 {{ $item['coverage_gap'] >= 0 ? '+' : '' }}{{ number_format($item['coverage_gap'], 1) }} 天</span>
+                            <span>在途 {{ $item['inbound_days'] !== null ? $item['inbound_days'].' 天后到仓' : '暂无' }}</span>
                         </div>
                     </article>
                 @endforeach
             </div>
         </article>
+    </section>
 
+    <section class="panel-grid panel-grid-2">
         <article class="panel insight-panel">
             <div class="panel-header">
                 <div>
@@ -253,39 +320,39 @@
                 @endforeach
             </div>
         </article>
-    </section>
 
-    <section class="panel">
-        <div class="panel-header">
-            <div>
-                <p class="page-kicker">重点商品</p>
-                <h2>营收贡献商品</h2>
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">重点商品</p>
+                    <h2>营收贡献商品</h2>
+                </div>
             </div>
-        </div>
 
-        <div class="table-shell">
-            <table>
-                <thead>
-                    <tr>
-                        <th>SKU</th>
-                        <th>商品</th>
-                        <th>类目</th>
-                        <th>销售额</th>
-                        <th>销量</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($topProducts as $product)
+            <div class="table-shell">
+                <table>
+                    <thead>
                         <tr>
-                            <td>{{ $product->sku }}</td>
-                            <td>{{ $product->name }}</td>
-                            <td>{{ $product->category }}</td>
-                            <td>${{ number_format((float) $product->revenue, 2) }}</td>
-                            <td>{{ $product->units_sold }}</td>
+                            <th>SKU</th>
+                            <th>商品</th>
+                            <th>类目</th>
+                            <th>销售额</th>
+                            <th>销量</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach ($topProducts as $product)
+                            <tr>
+                                <td>{{ $product->sku }}</td>
+                                <td>{{ $product->name }}</td>
+                                <td>{{ $product->category }}</td>
+                                <td>${{ number_format((float) $product->revenue, 2) }}</td>
+                                <td>{{ $product->units_sold }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </article>
     </section>
 @endsection

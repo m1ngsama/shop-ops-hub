@@ -29,6 +29,7 @@ class InsightsTest extends TestCase
         $response->assertOk();
         $response->assertSee('经营可视化');
         $response->assertSee('状态分布');
-        $response->assertSee('低库存优先级');
+        $response->assertSee('利润拆解');
+        $response->assertSee('库存覆盖');
     }
 }

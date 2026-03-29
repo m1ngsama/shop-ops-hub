@@ -1486,13 +1486,201 @@ tbody tr:hover {
     margin-top: 18px;
 }
 
+.tone-brand {
+    background: rgba(32, 48, 64, 0.14);
+    color: #203040;
+}
+
+.editorial-band {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+    gap: 18px;
+}
+
+.editorial-card,
+.collection-card,
+.supplier-card,
+.journey-card {
+    padding: 22px;
+    border-radius: 24px;
+    border: 1px solid rgba(19, 25, 33, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 12px 30px rgba(25, 36, 46, 0.08);
+}
+
+.editorial-card-strong {
+    background:
+        radial-gradient(circle at top right, rgba(243, 168, 71, 0.22), transparent 34%),
+        linear-gradient(135deg, #203040 0%, #1f3650 100%);
+    color: #fff;
+}
+
+.editorial-card h2 {
+    margin-top: 10px;
+    font-size: 1.7rem;
+}
+
+.editorial-card strong {
+    display: block;
+    margin-top: 12px;
+    font-size: 1.2rem;
+}
+
+.editorial-card p {
+    margin-top: 10px;
+    line-height: 1.7;
+}
+
+.editorial-card-strong p,
+.editorial-card-strong .hero-kicker {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.collection-grid,
+.supplier-grid,
+.journey-grid {
+    display: grid;
+    gap: 18px;
+}
+
+.collection-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.supplier-grid,
+.journey-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.feature-grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.collection-head {
+    display: grid;
+    gap: 10px;
+}
+
+.collection-head strong,
+.journey-card strong,
+.supplier-card strong {
+    display: block;
+}
+
+.collection-card p,
+.journey-card p,
+.supplier-card p {
+    margin-top: 10px;
+    line-height: 1.7;
+    color: #55616d;
+}
+
+.collection-products {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.collection-product {
+    padding: 14px;
+    border-radius: 16px;
+    background: var(--panel-soft);
+    border: 1px solid rgba(19, 25, 33, 0.06);
+}
+
+.collection-product span,
+.collection-product p,
+.coverage-meta span {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.collection-product strong {
+    display: block;
+    margin-top: 6px;
+}
+
+.comparison-shell {
+    overflow: auto;
+    border-radius: 24px;
+    border: 1px solid rgba(19, 25, 33, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 12px 30px rgba(25, 36, 46, 0.08);
+}
+
+.comparison-table {
+    min-width: 840px;
+}
+
+.comparison-table th:first-child,
+.comparison-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #f8fafc;
+}
+
+.comparison-table tbody td:first-child {
+    background: #fff;
+    font-weight: 600;
+}
+
+.compact-card h2 {
+    font-size: 1.1rem;
+}
+
+.journey-card span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    background: rgba(32, 48, 64, 0.08);
+    color: #203040;
+    font-weight: 800;
+}
+
+.journey-card strong {
+    margin-top: 14px;
+}
+
+.composition-shell {
+    display: grid;
+    gap: 18px;
+}
+
+.composition-bar {
+    display: flex;
+    min-height: 18px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(19, 25, 33, 0.08);
+}
+
+.composition-segment {
+    display: block;
+    min-width: 12px;
+}
+
+.coverage-meta {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
 @media (max-width: 1180px) {
     .feature-grid,
     .product-grid,
     .channel-strip,
     .category-grid,
     .metrics-grid-4,
-    .trend-grid {
+    .trend-grid,
+    .collection-grid,
+    .supplier-grid,
+    .journey-grid,
+    .feature-grid-4 {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -1501,7 +1689,8 @@ tbody tr:hover {
     .hero-shell,
     .catalog-hero,
     .detail-hero,
-    .donut-layout {
+    .donut-layout,
+    .editorial-band {
         grid-template-columns: 1fr;
     }
 }
@@ -1548,7 +1737,11 @@ tbody tr:hover {
     .category-grid,
     .metrics-grid-4,
     .trend-grid,
-    .hero-panel-metrics {
+    .hero-panel-metrics,
+    .collection-grid,
+    .supplier-grid,
+    .journey-grid,
+    .feature-grid-4 {
         grid-template-columns: 1fr;
     }
 

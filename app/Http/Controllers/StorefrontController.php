@@ -20,8 +20,12 @@ class StorefrontController extends Controller
             ->orderBy('name')
             ->get();
 
+        $recommendedProducts = $this->applySort($products, 'recommended')->values();
+        $productsBySku = $products->keyBy('sku');
+
         return view('storefront.home', [
-            'featuredProducts' => $products->take(4),
+            'featuredProducts' => $recommendedProducts->take(4),
+            'comparisonProducts' => $recommendedProducts->take(4),
             'categoryHighlights' => $products
                 ->groupBy('category')
                 ->map(function (Collection $group, string $category): array {
@@ -35,11 +39,28 @@ class StorefrontController extends Controller
                 ->sortByDesc('sku_count')
                 ->take(4)
                 ->values(),
+            'curatedCollections' => $this->buildCuratedCollections($productsBySku),
             'channelHighlights' => Channel::query()
                 ->withCount(['listings', 'orders'])
                 ->where('is_active', true)
                 ->orderBy('name')
                 ->get(),
+            'supplierHighlights' => $products
+                ->groupBy(fn (Product $product): string => $product->supplier?->name ?? '未分配')
+                ->map(function (Collection $group, string $name): array {
+                    $supplier = $group->first()?->supplier;
+
+                    return [
+                        'name' => $name,
+                        'quality_score' => $supplier?->quality_score,
+                        'sku_count' => $group->count(),
+                        'average_lead_time' => round((float) $group->avg('lead_time_days')),
+                        'categories' => $group->pluck('category')->unique()->values()->implode(' / '),
+                    ];
+                })
+                ->sortByDesc('quality_score')
+                ->take(3)
+                ->values(),
             'heroSummary' => [
                 'active_products' => $products->count(),
                 'available_inventory' => $products->sum(fn (Product $product): int => $product->availableInventory()),
@@ -150,5 +171,47 @@ class StorefrontController extends Controller
                 'query' => $query,
             ]
         );
+    }
+
+    private function buildCuratedCollections(Collection $productsBySku): Collection
+    {
+        return collect([
+            [
+                'tag' => '内容投放',
+                'title' => '轻健身与出行组合',
+                'copy' => '适合用短视频与内容种草带动转化，兼顾客单价和搭配购买。',
+                'skus' => ['WEAR-3104', 'TRIP-4107'],
+            ],
+            [
+                'tag' => '居家生活',
+                'title' => '居家香氛与桌面收纳',
+                'copy' => '偏礼品场景，适合节庆、换季和组合陈列。',
+                'skus' => ['HOME-2201', 'DESK-5202'],
+            ],
+            [
+                'tag' => '复购路线',
+                'title' => '个护回购与加购补单',
+                'copy' => '以稳定复购和老客补单为目标，适合建立连续经营节奏。',
+                'skus' => ['CARE-1001', 'DESK-5202'],
+            ],
+        ])->map(function (array $collection) use ($productsBySku): ?array {
+            $products = collect($collection['skus'])
+                ->map(fn (string $sku): ?Product => $productsBySku->get($sku))
+                ->filter();
+
+            if ($products->isEmpty()) {
+                return null;
+            }
+
+            return [
+                'tag' => $collection['tag'],
+                'title' => $collection['title'],
+                'copy' => $collection['copy'],
+                'products' => $products->values(),
+                'average_margin' => round((float) $products->avg(fn (Product $product): float => $product->marginRate()), 1),
+                'average_lead_time' => round((float) $products->avg('lead_time_days')),
+                'estimated_ticket' => round((float) $products->sum(fn (Product $product): float => (float) $product->target_price), 2),
+            ];
+        })->filter()->values();
     }
 }
