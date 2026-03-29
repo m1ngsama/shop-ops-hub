@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "m1ngsama/shop-ops-hub",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "A production-oriented Laravel operations platform for storefront, catalog, inventory, order, and channel workflows.",
+    "keywords": ["laravel", "ecommerce", "operations", "inventory", "dashboard"],
     "license": "MIT",
     "require": {
         "php": "^8.4",

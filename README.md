@@ -1,75 +1,89 @@
-# 商运后台
+# Shop Ops Hub
 
-一个基于 `Laravel 13 + MySQL + Redis + Docker` 的内部电商运营后台示例项目。
+一个面向真实上线环境的 `Laravel 13 + MySQL + Redis + Docker` 零售运营系统，覆盖公开前台、后台运营台、渠道同步、库存、订单、审计与经营可视化。
 
-## 项目定位
+## 项目边界
 
-本项目是一个中性的现实需求演示，不对应任何具体公司或业务主体。它模拟的是常见的多渠道零售运营场景：
+- 不映射任何具体公司、雇主或业务主体
+- 仓库内不包含生产密钥、生产密码或真实供应数据
+- 演示数据仅用于 `local / testing` 环境
+- 生产环境不再通过 `db:seed` 写入演示数据
 
-- 商品主数据管理
-- 多渠道刊登与同步
-- 库存批次与补货预警
-- 订单台账与毛利监控
-- 受保护的后台登录与接口令牌
+## 主要能力
 
-## 功能结构
-
-- `/login` 登录页
-- `/admin` 运营总览
-- `/admin/products` 商品中心
-- `/admin/products/{id}` 商品详情
-- `/admin/channels` 渠道中心
-- `/admin/orders` 订单中心
-
-## API
-
-- `GET /api/dashboard/metrics`
-- `POST /api/channels/{channel}/sync`
-
-这两个接口都需要以下任一凭证：
-
-- 已登录的后台管理员会话
-- 与 `SHOP_OPS_API_TOKEN` 匹配的 Bearer Token
+- 公开前台：商品目录、搜索、详情页、意向清单
+- 后台工作台：总览、可视化、商品、渠道、订单、审计
+- 同步链路：受保护 API、队列消费、同步记录
+- 经营分析：财务走势、渠道盈利、库存覆盖、上架准备度
+- 安全边界：后台登录、接口令牌、操作审计、基础安全响应头
 
 ## 技术栈
 
 - PHP 8.4
 - Laravel 13
-- Composer
-- MySQL
-- Redis
+- MySQL 8.4
+- Redis 7
 - Docker Compose
-- Laravel Queue Worker
+- Nginx
 
-## 本地验证
+## 本地开发
 
 ```bash
+cp .env.example .env
+docker run --rm -v "$PWD":/app -w /app composer:2 php artisan key:generate
 docker run --rm -v "$PWD":/app -w /app composer:2 php artisan migrate:fresh --seed
 docker run --rm -v "$PWD":/app -w /app composer:2 php artisan test
 ```
 
-## 部署说明
+## 运维命令
 
-生产环境包含 5 个服务：
+初始化或校准管理员，不触碰业务数据：
 
-- `app`: PHP-FPM
-- `worker`: 队列消费者
-- `web`: Nginx
-- `mysql`: MySQL 8.4
-- `redis`: Redis 7
+```bash
+php artisan ops:bootstrap-admin
+php artisan ops:bootstrap-admin --email=contact@example.com --password='strong-password' --rotate-password
+```
 
-快速部署：
+执行生产自检：
+
+```bash
+php artisan ops:check
+```
+
+## 生产部署
+
+1. 复制环境文件并填写真实值
 
 ```bash
 cp deploy/production.env.example .env.production
-docker compose --env-file .env.production up -d --build
-docker compose --env-file .env.production exec app php artisan migrate --force --seed
 ```
 
-建议的生产配置：
+2. 构建并启动服务
 
-- `APP_FORCE_HTTPS=true`
-- `QUEUE_CONNECTION=redis`
-- `APP_LOCALE=zh_CN`
-- 设置独立的 `SHOP_OPS_ADMIN_PASSWORD`
-- 设置独立的 `SHOP_OPS_API_TOKEN`
+```bash
+docker compose --env-file .env.production up -d --build
+```
+
+3. 执行迁移
+
+```bash
+docker compose --env-file .env.production exec app php artisan migrate --force
+```
+
+4. 初始化管理员
+
+```bash
+docker compose --env-file .env.production exec app php artisan ops:bootstrap-admin
+```
+
+5. 运行生产自检
+
+```bash
+docker compose --env-file .env.production exec app php artisan ops:check
+```
+
+## 演示数据说明
+
+- `CommerceOpsSeeder` 仅用于本地和测试
+- `DatabaseSeeder` 在生产环境不会写入演示数据
+- 如果需要正式导入商品、供应商、库存或订单，应通过受控脚本或后台管理流程完成

@@ -14,6 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(CommerceOpsSeeder::class);
+        if (app()->environment(['local', 'testing'])) {
+            $this->call(CommerceOpsSeeder::class);
+
+            return;
+        }
+
+        $this->command?->warn('生产环境默认不会写入演示数据。');
+        $this->command?->line('如需初始化管理员，请执行: php artisan ops:bootstrap-admin');
     }
 }

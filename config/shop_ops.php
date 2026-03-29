@@ -1,7 +1,9 @@
 <?php
 
+$isProduction = env('APP_ENV') === 'production';
+
 return [
-    'api_token' => env('SHOP_OPS_API_TOKEN'),
-    'admin_email' => env('SHOP_OPS_ADMIN_EMAIL', 'admin@shop.m1ng.space'),
-    'admin_password' => env('SHOP_OPS_ADMIN_PASSWORD', 'console-demo'),
+    'api_token' => env('SHOP_OPS_API_TOKEN', $isProduction ? null : 'local-dev-token-change-me'),
+    'admin_email' => env('SHOP_OPS_ADMIN_EMAIL', $isProduction ? null : 'admin@example.local'),
+    'admin_password' => env('SHOP_OPS_ADMIN_PASSWORD', $isProduction ? null : 'change-this-local-admin-password'),
 ];
