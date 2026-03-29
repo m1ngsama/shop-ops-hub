@@ -4,6 +4,8 @@
 @section('page_title', '运营总览')
 @section('page_copy', '参考成熟电商控制台的信息结构，优先展示待处理事项、经营指标、渠道健康和最近执行记录。')
 @section('page_actions')
+    <a class="secondary-button" href="{{ route('admin.insights') }}">查看可视化</a>
+    <a class="secondary-button" href="{{ route('storefront.home') }}" target="_blank" rel="noreferrer">前台预览</a>
     <a class="secondary-button" href="{{ route('admin.channels.index') }}">查看渠道</a>
     <a class="primary-button" href="{{ route('admin.orders.index') }}">查看订单</a>
 @endsection
@@ -247,5 +249,66 @@
                 </tbody>
             </table>
         </div>
+    </section>
+
+    <section class="panel-grid panel-grid-2">
+        <article class="panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">公开前台</p>
+                    <h2>选品展示优先级</h2>
+                </div>
+                <a class="text-link" href="{{ route('storefront.catalog') }}" target="_blank" rel="noreferrer">打开前台目录</a>
+            </div>
+
+            <div class="row-list">
+                @foreach ($topProducts as $product)
+                    <article class="row-card">
+                        <div class="row-main">
+                            <strong>{{ $product->name }}</strong>
+                            <p>{{ $product->sku }} · {{ $product->category }}</p>
+                        </div>
+                        <div class="row-meta">
+                            <span>${{ number_format((float) $product->revenue, 2) }}</span>
+                            <span>{{ $product->units_sold }} 件</span>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+
+        <article class="panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">可视化入口</p>
+                    <h2>驾驶舱看板</h2>
+                </div>
+                <a class="text-link" href="{{ route('admin.insights') }}">进入看板</a>
+            </div>
+
+            <div class="action-list">
+                <article class="action-item">
+                    <div>
+                        <strong>财务走势</strong>
+                        <p>把近 7 日营收与毛利放到同一张折线图里，便于发现渠道拉动和利润拐点。</p>
+                    </div>
+                    <a class="text-link" href="{{ route('admin.insights') }}">查看</a>
+                </article>
+                <article class="action-item">
+                    <div>
+                        <strong>订单结构</strong>
+                        <p>用状态占比和渠道贡献拆解订单结构，不再只靠表格滚动查看。</p>
+                    </div>
+                    <a class="text-link" href="{{ route('admin.insights') }}">查看</a>
+                </article>
+                <article class="action-item">
+                    <div>
+                        <strong>补货与同步</strong>
+                        <p>把低库存和任务执行时间线放到同一屏里，处理优先级更清晰。</p>
+                    </div>
+                    <a class="text-link" href="{{ route('admin.insights') }}">查看</a>
+                </article>
+            </div>
+        </article>
     </section>
 @endsection

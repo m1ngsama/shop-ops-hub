@@ -1,0 +1,291 @@
+@extends('layouts.app', ['title' => '经营可视化 | 商运后台'])
+
+@section('page_kicker', '数据驾驶舱')
+@section('page_title', '经营可视化')
+@section('page_copy', '把营收、毛利、订单结构、渠道贡献、低库存和任务执行时间线放到同一套可视化里。')
+@section('page_actions')
+    <a class="secondary-button" href="{{ route('storefront.home') }}" target="_blank" rel="noreferrer">前台预览</a>
+    <a class="secondary-button" href="{{ route('admin.dashboard') }}">返回总览</a>
+@endsection
+
+@section('content')
+    @php
+        $statusMap = ['processing' => '处理中', 'shipped' => '已发货', 'delivered' => '已签收'];
+        $statusColors = ['processing' => '#f59e0b', 'shipped' => '#2563eb', 'delivered' => '#16a34a'];
+        $syncStatusMap = ['queued' => '排队中', 'running' => '执行中', 'completed' => '已完成', 'failed' => '失败'];
+        $syncToneMap = ['queued' => 'warning', 'running' => 'info', 'completed' => 'success', 'failed' => 'danger'];
+        $triggerMap = ['manual' => '手动', 'api' => '接口', 'scheduler' => '调度'];
+
+        $financialMax = max((float) $financialTrend->max('revenue'), (float) $financialTrend->max('profit'), 1);
+        $pointDivisor = max($financialTrend->count() - 1, 1);
+        $seriesPoints = function (string $key) use ($financialTrend, $financialMax, $pointDivisor): string {
+            return $financialTrend->values()->map(function (array $point, int $index) use ($key, $financialMax, $pointDivisor): string {
+                $x = 6 + (($index / $pointDivisor) * 88);
+                $y = 92 - (($point[$key] / $financialMax) * 78);
+
+                return round($x, 2).','.round($y, 2);
+            })->implode(' ');
+        };
+
+        $revenuePoints = $seriesPoints('revenue');
+        $profitPoints = $seriesPoints('profit');
+
+        $totalOrders = max((int) $orderStatusBreakdown->sum('total'), 1);
+        $offset = 0.0;
+        $statusSlices = $orderStatusBreakdown->map(function ($item) use (&$offset, $totalOrders, $statusColors): array {
+            $share = ((int) $item->total / $totalOrders) * 100;
+            $start = $offset;
+            $offset += $share;
+
+            return [
+                'status' => $item->status,
+                'total' => (int) $item->total,
+                'share' => round($share, 1),
+                'start' => $start,
+                'end' => $offset,
+                'color' => $statusColors[$item->status] ?? '#64748b',
+            ];
+        });
+        $donutGradient = $statusSlices
+            ->map(fn (array $slice): string => "{$slice['color']} {$slice['start']}% {$slice['end']}%")
+            ->implode(', ');
+
+        $channelRevenueTotal = max((float) $channelPerformance->sum('revenue'), 1);
+    @endphp
+
+    <section class="metrics-grid metrics-grid-4">
+        <article class="metric-card">
+            <span>近 7 日销售额</span>
+            <strong>${{ number_format($summary['weekly_revenue'], 2) }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>平均客单</span>
+            <strong>${{ number_format($visualSummary['average_order_value'], 2) }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>已履约占比</span>
+            <strong>{{ number_format($visualSummary['fulfilled_ratio'], 1) }}%</strong>
+        </article>
+        <article class="metric-card">
+            <span>低库存风险</span>
+            <strong>{{ $summary['low_stock_count'] }}</strong>
+        </article>
+    </section>
+
+    <section class="panel-grid panel-grid-2">
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">财务走势</p>
+                    <h2>近 7 日营收与毛利</h2>
+                </div>
+            </div>
+
+            <div class="chart-legend">
+                <span><i class="legend-dot revenue-dot"></i> 营收</span>
+                <span><i class="legend-dot profit-dot"></i> 毛利</span>
+            </div>
+
+            <div class="sparkline-shell">
+                <svg class="sparkline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                    <polyline class="sparkline-path revenue-path" points="{{ $revenuePoints }}"></polyline>
+                    <polyline class="sparkline-path profit-path" points="{{ $profitPoints }}"></polyline>
+                </svg>
+            </div>
+
+            <div class="trend-grid">
+                @foreach ($financialTrend as $point)
+                    <article>
+                        <span>{{ $point['label'] }}</span>
+                        <strong>${{ number_format($point['revenue'], 0) }}</strong>
+                        <p>毛利 ${{ number_format($point['profit'], 0) }}</p>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">订单结构</p>
+                    <h2>状态分布</h2>
+                </div>
+            </div>
+
+            <div class="donut-layout">
+                <div class="donut-ring" style="background: conic-gradient({{ $donutGradient }});">
+                    <div class="donut-core">
+                        <strong>{{ $totalOrders }}</strong>
+                        <span>订单总量</span>
+                    </div>
+                </div>
+
+                <div class="legend-list">
+                    @foreach ($statusSlices as $slice)
+                        <article class="legend-row">
+                            <div class="legend-main">
+                                <i class="legend-dot" style="background: {{ $slice['color'] }}"></i>
+                                <strong>{{ $statusMap[$slice['status']] ?? $slice['status'] }}</strong>
+                            </div>
+                            <div class="row-meta">
+                                <span>{{ $slice['total'] }} 单</span>
+                                <span>{{ number_format($slice['share'], 1) }}%</span>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="panel-grid panel-grid-2">
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">渠道贡献</p>
+                    <h2>渠道营收占比</h2>
+                </div>
+            </div>
+
+            <div class="share-stack">
+                @foreach ($channelPerformance as $channel)
+                    @php
+                        $share = ((float) $channel->revenue / $channelRevenueTotal) * 100;
+                    @endphp
+                    <article class="share-row">
+                        <div class="share-head">
+                            <strong>{{ $channel->name }}</strong>
+                            <span>{{ number_format($share, 1) }}%</span>
+                        </div>
+                        <div class="share-bar">
+                            <span style="width: {{ max($share, 6) }}%"></span>
+                        </div>
+                        <p class="table-subtext">{{ $channel->order_count }} 笔订单 · ${{ number_format((float) $channel->revenue, 2) }}</p>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">刊登矩阵</p>
+                    <h2>转化与表现分布</h2>
+                </div>
+            </div>
+
+            <div class="matrix-board">
+                @foreach ($listingPerformance as $listing)
+                    <span
+                        class="matrix-dot"
+                        style="left: {{ min(max((float) $listing->conversion_rate * 9, 8), 92) }}%; top: {{ min(max(100 - (float) $listing->performance_score, 12), 84) }}%;"
+                        title="{{ $listing->product->name }} · {{ $listing->channel->name }}"
+                    ></span>
+                @endforeach
+
+                <span class="matrix-axis matrix-axis-x">转化率</span>
+                <span class="matrix-axis matrix-axis-y">表现分</span>
+            </div>
+
+            <div class="legend-list">
+                @foreach ($listingPerformance as $listing)
+                    <article class="legend-row">
+                        <div class="legend-main">
+                            <strong>{{ $listing->product->name }}</strong>
+                            <span class="table-subtext">{{ $listing->channel->name }}</span>
+                        </div>
+                        <div class="row-meta">
+                            <span>{{ number_format((float) $listing->conversion_rate, 1) }}%</span>
+                            <span>{{ number_format((float) $listing->performance_score, 1) }}</span>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+    </section>
+
+    <section class="panel-grid panel-grid-2">
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">补货风险</p>
+                    <h2>低库存优先级</h2>
+                </div>
+            </div>
+
+            <div class="row-list">
+                @foreach ($inventoryRisks as $risk)
+                    <article class="row-card">
+                        <div class="row-main">
+                            <strong>{{ $risk['product']->name }}</strong>
+                            <p>{{ $risk['product']->sku }} · 安全库存 {{ $risk['product']->safety_stock }} · 交期 {{ $risk['product']->lead_time_days }} 天</p>
+                        </div>
+                        <div class="row-meta">
+                            <span class="status-chip tone-warning">缺口 {{ $risk['gap'] }}</span>
+                            <span>可售 {{ $risk['available_units'] }}</span>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">执行时间线</p>
+                    <h2>最近同步任务</h2>
+                </div>
+            </div>
+
+            <div class="timeline-list">
+                @foreach ($recentSyncRuns as $run)
+                    <article class="timeline-item">
+                        <span class="timeline-marker tone-{{ $syncToneMap[$run->status] ?? 'neutral' }}"></span>
+                        <div class="timeline-copy">
+                            <strong>{{ $run->channel->name }}</strong>
+                            <p>{{ $triggerMap[$run->trigger_type] ?? strtoupper($run->trigger_type) }} · {{ $run->created_at?->format('m-d H:i') }} @if($run->user) · {{ $run->user->name }} @endif</p>
+                        </div>
+                        <div class="row-meta">
+                            <span class="status-chip tone-{{ $syncToneMap[$run->status] ?? 'neutral' }}">{{ $syncStatusMap[$run->status] ?? $run->status }}</span>
+                            <span>{{ $run->processed_count }} 条</span>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="page-kicker">重点商品</p>
+                <h2>营收贡献商品</h2>
+            </div>
+        </div>
+
+        <div class="table-shell">
+            <table>
+                <thead>
+                    <tr>
+                        <th>SKU</th>
+                        <th>商品</th>
+                        <th>类目</th>
+                        <th>销售额</th>
+                        <th>销量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($topProducts as $product)
+                        <tr>
+                            <td>{{ $product->sku }}</td>
+                            <td>{{ $product->name }}</td>
+                            <td>{{ $product->category }}</td>
+                            <td>${{ number_format((float) $product->revenue, 2) }}</td>
+                            <td>{{ $product->units_sold }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </section>
+@endsection

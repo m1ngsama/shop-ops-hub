@@ -24,6 +24,7 @@
         </form>
 
         <div class="topbar-tools">
+            <a class="topbar-link" href="{{ route('storefront.home') }}" target="_blank" rel="noreferrer">前台站点</a>
             <span class="topbar-pill">{{ app()->environment('production') ? '生产环境' : '开发环境' }}</span>
             <span class="topbar-time">{{ now()->format('m-d H:i') }}</span>
         </div>
@@ -33,6 +34,7 @@
         <aside class="console-sidebar">
             <nav class="side-nav">
                 <a href="{{ route('admin.dashboard') }}" @class(['is-active' => request()->routeIs('admin.dashboard')])>总览</a>
+                <a href="{{ route('admin.insights') }}" @class(['is-active' => request()->routeIs('admin.insights')])>可视化</a>
                 <a href="{{ route('admin.products.index') }}" @class(['is-active' => request()->routeIs('admin.products.*')])>商品</a>
                 <a href="{{ route('admin.channels.index') }}" @class(['is-active' => request()->routeIs('admin.channels.*')])>渠道</a>
                 <a href="{{ route('admin.orders.index') }}" @class(['is-active' => request()->routeIs('admin.orders.*')])>订单</a>
@@ -51,6 +53,8 @@
                     <li>接口令牌</li>
                     <li>异步同步</li>
                     <li>补货预警</li>
+                    <li>前台选品站</li>
+                    <li>经营可视化</li>
                 </ul>
             </div>
 

@@ -12,23 +12,28 @@
             <p class="page-kicker">内部系统</p>
             <h1>把商品、库存、渠道和订单放到同一个控制台里处理。</h1>
             <p class="page-copy">
-                这个项目是中性的真实需求演示，不映射任何具体雇主信息。界面语言默认中文，
-                入口仅保留登录页，后台功能通过会话与接口令牌保护。
+                这个项目是中性的真实需求演示，不映射任何具体公司或业务主体。公开前台用于选品浏览与意向清单，
+                后台则通过会话与接口令牌保护，承接商品、渠道、订单和可视化分析。
             </p>
 
             <div class="hero-matrix">
                 <article>
-                    <strong>任务优先</strong>
-                    <p>以筛选、表格、推荐动作和批量处理为中心，而不是宣传式落地页。</p>
+                    <strong>前台选品</strong>
+                    <p>公开站点可以浏览商品、筛选类目，并把候选商品加入意向清单。</p>
                 </article>
                 <article>
                     <strong>权限边界</strong>
                     <p>后台页面需登录访问，接口需管理员会话或 Bearer Token。</p>
                 </article>
                 <article>
-                    <strong>异步执行</strong>
-                    <p>渠道同步进入队列，由 worker 消费，避免阻塞浏览器请求。</p>
+                    <strong>经营可视化</strong>
+                    <p>控制台补充了经营驾驶舱，用图表看订单结构、财务走势和库存风险。</p>
                 </article>
+            </div>
+
+            <div class="card-actions login-links">
+                <a class="secondary-button" href="{{ route('storefront.home') }}">打开前台站点</a>
+                <a class="secondary-button" href="{{ route('storefront.catalog') }}">浏览商品目录</a>
             </div>
         </section>
 

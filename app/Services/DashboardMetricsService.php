@@ -99,6 +99,38 @@ class DashboardMetricsService
             });
     }
 
+    public function financialTrend(int $days = 7): Collection
+    {
+        $startDate = now()->subDays($days - 1)->startOfDay();
+
+        $revenueTotals = Order::query()
+            ->where('ordered_at', '>=', $startDate)
+            ->selectRaw('DATE(ordered_at) as day')
+            ->selectRaw('COALESCE(SUM(sale_price * quantity), 0) as revenue')
+            ->groupBy('day')
+            ->pluck('revenue', 'day');
+
+        $profitTotals = Order::query()
+            ->join('products', 'orders.product_id', '=', 'products.id')
+            ->where('ordered_at', '>=', $startDate)
+            ->selectRaw('DATE(orders.ordered_at) as day')
+            ->selectRaw('COALESCE(SUM((orders.sale_price * orders.quantity) - (products.cost_price * orders.quantity) - orders.ad_spend - orders.channel_fee), 0) as profit')
+            ->groupBy('day')
+            ->pluck('profit', 'day');
+
+        return collect(range(0, $days - 1))
+            ->map(function (int $offset) use ($startDate, $revenueTotals, $profitTotals): array {
+                $day = $startDate->copy()->addDays($offset);
+
+                return [
+                    'date' => $day->toDateString(),
+                    'label' => $day->format('m/d'),
+                    'revenue' => round((float) ($revenueTotals[$day->toDateString()] ?? 0), 2),
+                    'profit' => round((float) ($profitTotals[$day->toDateString()] ?? 0), 2),
+                ];
+            });
+    }
+
     public function orderStatusBreakdown(): Collection
     {
         return Order::query()
