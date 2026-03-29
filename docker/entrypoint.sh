@@ -3,7 +3,7 @@ set -e
 
 cd /var/www/html
 
-until mysqladmin ping -h"${DB_HOST}" -P"${DB_PORT:-3306}" -u"${DB_USERNAME}" -p"${DB_PASSWORD}" --silent; do
+until mariadb-admin ping --protocol=TCP --skip-ssl -h"${DB_HOST}" -P"${DB_PORT:-3306}" -u"${DB_USERNAME}" -p"${DB_PASSWORD}" --silent; do
     sleep 2
 done
 
