@@ -13,7 +13,7 @@ The target business profile is a cross-border B2C company selling large catalogs
 
 This repository turns that profile into a working demo product that matches the preferred engineering stack from the job description:
 
-- PHP 8.3
+- PHP 8.4
 - Laravel 13
 - Composer
 - MySQL-ready schema design

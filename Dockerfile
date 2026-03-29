@@ -13,7 +13,7 @@ RUN composer install \
 COPY . .
 RUN composer dump-autoload --optimize --no-dev
 
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 RUN apk add --no-cache mysql-client oniguruma-dev \
     && docker-php-ext-install mbstring pdo_mysql bcmath opcache
