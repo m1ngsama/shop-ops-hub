@@ -31,7 +31,6 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-    command: --default-authentication-plugin=caching_sha2_password
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
