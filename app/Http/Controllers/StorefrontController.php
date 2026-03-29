@@ -61,6 +61,8 @@ class StorefrontController extends Controller
                 ->sortByDesc('quality_score')
                 ->take(3)
                 ->values(),
+            'buyerVoices' => $this->buildBuyerVoices($recommendedProducts),
+            'servicePromises' => $this->buildServicePromises($products),
             'heroSummary' => [
                 'active_products' => $products->count(),
                 'available_inventory' => $products->sum(fn (Product $product): int => $product->availableInventory()),
@@ -132,6 +134,15 @@ class StorefrontController extends Controller
                 ->orderBy('name')
                 ->take(3)
                 ->get(),
+            'companionProducts' => Product::query()
+                ->with(['supplier', 'inventoryBatches', 'listings.channel'])
+                ->where('status', 'active')
+                ->where('category', '!=', $product->category)
+                ->whereKeyNot($product->getKey())
+                ->orderByDesc('target_price')
+                ->take(2)
+                ->get(),
+            'faqItems' => $this->buildFaqItems($product),
             'planSummary' => $selectionPlanService->summary(),
             'selectedQuantity' => $selectionPlanService->quantityFor($product),
         ]);
@@ -213,5 +224,82 @@ class StorefrontController extends Controller
                 'estimated_ticket' => round((float) $products->sum(fn (Product $product): float => (float) $product->target_price), 2),
             ];
         })->filter()->values();
+    }
+
+    private function buildBuyerVoices(Collection $products): Collection
+    {
+        return $products
+            ->sortByDesc(fn (Product $product): int => (int) $product->listings->sum('review_count'))
+            ->take(3)
+            ->values()
+            ->map(function (Product $product): array {
+                $reviewCount = (int) $product->listings->sum('review_count');
+                $score = round((float) ($product->listings->avg('performance_score') ?? 0), 1);
+                $conversion = round((float) ($product->listings->avg('conversion_rate') ?? 0), 1);
+
+                return [
+                    'product' => $product,
+                    'score' => $score,
+                    'conversion' => $conversion,
+                    'review_count' => $reviewCount,
+                    'quote' => match ($product->category) {
+                        '个护' => '复购反馈稳定，适合做持续经营，不用靠极端促销拉动。',
+                        '服饰' => '展示效果和内容带货更重要，颜色与尺码组合会直接影响转化。',
+                        default => '组合购买表现更好，详情页里把使用场景说清楚后更容易成交。',
+                    },
+                ];
+            });
+    }
+
+    private function buildServicePromises(Collection $products): Collection
+    {
+        $averageLeadTime = round((float) $products->avg('lead_time_days'));
+        $averageQuality = round((float) $products
+            ->map(fn (Product $product): ?int => $product->supplier?->quality_score)
+            ->filter()
+            ->avg());
+
+        return collect([
+            [
+                'title' => '商品信息集中透明',
+                'copy' => '前台页面直接展示价格区间、交期、库存和渠道覆盖，不把经营判断藏在后台。',
+                'value' => $products->count().' 个 SKU',
+            ],
+            [
+                'title' => '履约能力可视化',
+                'copy' => '公开页面就能看到库存和交期，让前端浏览与后台履约保持同一套事实来源。',
+                'value' => '平均 '.$averageLeadTime.' 天交期',
+            ],
+            [
+                'title' => '供给质量有依据',
+                'copy' => '供应商质量分和类目覆盖同时展示，降低“看起来不错但执行不稳”的风险。',
+                'value' => '平均质量 '.$averageQuality.' 分',
+            ],
+        ]);
+    }
+
+    private function buildFaqItems(Product $product): Collection
+    {
+        $availableInventory = $product->availableInventory();
+        $averageConversion = round((float) ($product->listings->avg('conversion_rate') ?? 0), 1);
+
+        return collect([
+            [
+                'question' => '多久可以进入下一轮补货或试单？',
+                'answer' => $availableInventory > $product->safety_stock
+                    ? '当前库存高于安全库存，可以先做小批量试单，再根据渠道反馈扩量。'
+                    : '当前库存低于安全库存，建议先确认在途批次和供应商交期，再决定是否放量。',
+            ],
+            [
+                'question' => '适合什么样的成交方式？',
+                'answer' => $averageConversion >= 7
+                    ? '当前转化率表现较好，适合做内容承接、组合加购和直接成交。'
+                    : '更适合通过场景教育、套装组合或更明确的利益点来完成转化。',
+            ],
+            [
+                'question' => '后台会继续跟哪些数据？',
+                'answer' => '后台会继续跟踪库存覆盖、渠道刊登表现、订单利润和同步任务执行状态，避免前台展示与执行脱节。',
+            ],
+        ]);
     }
 }

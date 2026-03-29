@@ -54,5 +54,6 @@ class StorefrontTest extends TestCase
         $response->assertSee('场景组合');
         $response->assertSee('商品比较');
         $response->assertSee('轻健身与出行组合');
+        $response->assertSee('买家反馈摘要');
     }
 }

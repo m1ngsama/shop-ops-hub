@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuditLogService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditLogService $auditLogService): RedirectResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -48,24 +49,39 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
         RateLimiter::clear($throttleKey);
 
-        if (! $request->user()?->isAdmin()) {
+        if (! $request->user()?->canAccessAdmin()) {
             Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
 
             throw ValidationException::withMessages([
                 'email' => '当前账号没有后台访问权限。',
             ]);
         }
 
+        $auditLogService->record('auth.login', $request, meta: [
+            'role' => $request->user()?->role,
+            'remember' => $request->boolean('remember'),
+        ]);
+
         return redirect()->intended(route('admin.dashboard'));
     }
 
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, AuditLogService $auditLogService): RedirectResponse
     {
+        $user = $request->user();
+
+        if ($user) {
+            $auditLogService->record('auth.logout', $request, $user, meta: [
+                'role' => $user->role,
+            ]);
+        }
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home');
+        return redirect()->route('storefront.home');
     }
 }

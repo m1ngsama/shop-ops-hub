@@ -38,12 +38,16 @@
                 <a href="{{ route('admin.products.index') }}" @class(['is-active' => request()->routeIs('admin.products.*')])>商品</a>
                 <a href="{{ route('admin.channels.index') }}" @class(['is-active' => request()->routeIs('admin.channels.*')])>渠道</a>
                 <a href="{{ route('admin.orders.index') }}" @class(['is-active' => request()->routeIs('admin.orders.*')])>订单</a>
+                @if (auth()->user()?->canManageOperations())
+                    <a href="{{ route('admin.audit.index') }}" @class(['is-active' => request()->routeIs('admin.audit.*')])>审计</a>
+                @endif
             </nav>
 
             <div class="sidebar-card">
                 <span class="sidebar-label">当前账号</span>
                 <strong>{{ auth()->user()?->name }}</strong>
                 <p>{{ auth()->user()?->email }}</p>
+                <span class="status-chip tone-info sidebar-role">{{ auth()->user()?->roleLabel() }}</span>
             </div>
 
             <div class="sidebar-card">

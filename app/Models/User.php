@@ -37,8 +37,37 @@ class User extends Authenticatable
         return $this->hasMany(SyncRun::class);
     }
 
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class);
+    }
+
+    public function hasRole(string ...$roles): bool
+    {
+        return $this->is_active && in_array($this->role, $roles, true);
+    }
+
+    public function canAccessAdmin(): bool
+    {
+        return $this->hasRole('admin', 'operator', 'analyst');
+    }
+
+    public function canManageOperations(): bool
+    {
+        return $this->hasRole('admin', 'operator');
+    }
+
     public function isAdmin(): bool
     {
-        return $this->is_active && $this->role === 'admin';
+        return $this->hasRole('admin');
+    }
+
+    public function roleLabel(): string
+    {
+        return match ($this->role) {
+            'operator' => '运营经理',
+            'analyst' => '数据分析',
+            default => '系统管理员',
+        };
     }
 }

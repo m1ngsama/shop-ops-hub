@@ -38,7 +38,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('category');
             $table->string('status')->default('active');
-            $table->string('marketplace_focus')->default('amazon-first');
+            $table->string('marketplace_focus')->default('marketplace-first');
             $table->decimal('cost_price', 10, 2);
             $table->decimal('target_price', 10, 2);
             $table->decimal('fulfillment_fee', 10, 2)->default(0);

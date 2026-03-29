@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\Listing;
 use App\Models\Order;
+use App\Models\Product;
+use App\Models\Supplier;
 use App\Models\SyncRun;
 use App\Services\DashboardMetricsService;
 use App\Services\ReplenishmentService;
@@ -35,6 +38,36 @@ class VisualizationController extends Controller
                 ->latest()
                 ->take(6)
                 ->get(),
+            'recentAuditLogs' => AuditLog::query()
+                ->with('user')
+                ->latest()
+                ->take(5)
+                ->get(),
+            'supplierPulse' => Supplier::query()
+                ->withCount('products')
+                ->orderByDesc('quality_score')
+                ->take(4)
+                ->get(),
+            'assortmentReadiness' => Product::query()
+                ->with(['inventoryBatches', 'listings'])
+                ->where('status', 'active')
+                ->orderBy('name')
+                ->get()
+                ->map(function (Product $product): array {
+                    $availableInventory = $product->availableInventory();
+                    $reviewCount = (int) $product->listings->sum('review_count');
+
+                    return [
+                        'product' => $product,
+                        'inventory' => $availableInventory,
+                        'review_count' => $reviewCount,
+                        'margin_rate' => $product->marginRate(),
+                        'readiness_score' => round(($availableInventory * 0.2) + ($product->marginRate() * 1.2) + ($reviewCount * 0.05), 1),
+                    ];
+                })
+                ->sortByDesc('readiness_score')
+                ->take(5)
+                ->values(),
             'inventoryRisks' => $replenishmentService->recommendations()->take(5),
             'visualSummary' => [
                 'average_order_value' => round((float) Order::query()->selectRaw('COALESCE(AVG(sale_price * quantity), 0) as value')->value('value'), 2),

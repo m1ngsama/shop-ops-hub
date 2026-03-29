@@ -22,5 +22,9 @@ class AuthenticationTest extends TestCase
 
         $response->assertRedirect('/admin');
         $this->assertAuthenticatedAs(User::query()->firstOrFail());
+        $this->assertDatabaseHas('audit_logs', [
+            'event' => 'auth.login',
+            'user_id' => User::query()->where('email', config('shop_ops.admin_email'))->value('id'),
+        ]);
     }
 }

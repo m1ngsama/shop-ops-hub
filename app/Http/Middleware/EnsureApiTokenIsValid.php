@@ -11,7 +11,7 @@ class EnsureApiTokenIsValid
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()?->isAdmin()) {
+        if ($request->user()?->canManageOperations()) {
             return $next($request);
         }
 

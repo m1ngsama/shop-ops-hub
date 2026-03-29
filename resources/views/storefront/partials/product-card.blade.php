@@ -19,6 +19,12 @@
             <strong class="price-mark">${{ number_format((float) $product->target_price, 2) }}</strong>
         </div>
 
+        <div class="rating-row">
+            <span class="rating-stars">★★★★★</span>
+            <strong>{{ number_format($averageScore, 1) }}</strong>
+            <span>{{ $reviewCount }} 条反馈</span>
+        </div>
+
         <p class="product-card-copy">{{ $product->selling_points }}</p>
 
         <div class="pill-row">

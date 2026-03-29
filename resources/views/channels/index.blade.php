@@ -33,7 +33,7 @@
             </article>
             <article class="detail-card">
                 <span>鉴权方式</span>
-                <strong>管理员会话或 Bearer Token</strong>
+                <strong>运营权限会话或 Bearer Token</strong>
             </article>
             <article class="detail-card">
                 <span>执行方式</span>
@@ -79,10 +79,14 @@
                 </div>
 
                 <div class="card-actions">
-                    <form method="post" action="{{ route('admin.channels.sync', $channel) }}">
-                        @csrf
-                        <button type="submit" class="primary-button">加入同步队列</button>
-                    </form>
+                    @if (auth()->user()?->canManageOperations())
+                        <form method="post" action="{{ route('admin.channels.sync', $channel) }}">
+                            @csrf
+                            <button type="submit" class="primary-button">加入同步队列</button>
+                        </form>
+                    @else
+                        <span class="status-chip tone-neutral">当前账号仅可查看</span>
+                    @endif
                 </div>
 
                 <div class="row-list compact-list">

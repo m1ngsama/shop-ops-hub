@@ -31,5 +31,7 @@ class InsightsTest extends TestCase
         $response->assertSee('状态分布');
         $response->assertSee('利润拆解');
         $response->assertSee('库存覆盖');
+        $response->assertSee('上架准备度');
+        $response->assertSee('审计轨迹');
     }
 }

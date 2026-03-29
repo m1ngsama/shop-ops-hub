@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AuditLog;
 use App\Models\Channel;
 use App\Models\InventoryBatch;
 use App\Models\Listing;
@@ -20,6 +21,7 @@ class CommerceOpsSeeder extends Seeder
     {
         Schema::disableForeignKeyConstraints();
 
+        AuditLog::query()->delete();
         SyncRun::query()->delete();
         Order::query()->delete();
         InventoryBatch::query()->delete();
@@ -31,13 +33,33 @@ class CommerceOpsSeeder extends Seeder
 
         Schema::enableForeignKeyConstraints();
 
-        User::query()->updateOrCreate(
+        $admin = User::query()->updateOrCreate(
             ['email' => config('shop_ops.admin_email')],
             [
                 'name' => '系统管理员',
                 'role' => 'admin',
                 'is_active' => true,
                 'password' => Hash::make(config('shop_ops.admin_password')),
+            ]
+        );
+
+        $operator = User::query()->updateOrCreate(
+            ['email' => 'ops-lead@example.local'],
+            [
+                'name' => '运营经理',
+                'role' => 'operator',
+                'is_active' => true,
+                'password' => Hash::make('operator-demo-password'),
+            ]
+        );
+
+        $analyst = User::query()->updateOrCreate(
+            ['email' => 'insight@example.local'],
+            [
+                'name' => '数据分析',
+                'role' => 'analyst',
+                'is_active' => true,
+                'password' => Hash::make('analyst-demo-password'),
             ]
         );
 
@@ -239,9 +261,9 @@ class CommerceOpsSeeder extends Seeder
             ]);
         }
 
-        SyncRun::query()->create([
+        $manualRun = SyncRun::query()->create([
             'channel_id' => $channels['marketplace_a']->id,
-            'user_id' => User::query()->where('email', config('shop_ops.admin_email'))->value('id'),
+            'user_id' => $admin->id,
             'trigger_type' => 'manual',
             'status' => 'completed',
             'processed_count' => 7,
@@ -251,9 +273,9 @@ class CommerceOpsSeeder extends Seeder
             'finished_at' => now()->subHours(4)->addMinutes(2),
         ]);
 
-        SyncRun::query()->create([
+        $scheduledRun = SyncRun::query()->create([
             'channel_id' => $channels['marketplace_b']->id,
-            'user_id' => User::query()->where('email', config('shop_ops.admin_email'))->value('id'),
+            'user_id' => $operator->id,
             'trigger_type' => 'scheduler',
             'status' => 'completed',
             'processed_count' => 4,
@@ -261,6 +283,54 @@ class CommerceOpsSeeder extends Seeder
             'created_at' => now()->subHours(10),
             'updated_at' => now()->subHours(10),
             'finished_at' => now()->subHours(10)->addMinutes(1),
+        ]);
+
+        AuditLog::query()->create([
+            'user_id' => $admin->id,
+            'actor_label' => $admin->name,
+            'event' => 'auth.login',
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'Seeder/Console',
+            'meta' => ['role' => 'admin'],
+            'created_at' => now()->subHours(5),
+            'updated_at' => now()->subHours(5),
+        ]);
+
+        AuditLog::query()->create([
+            'user_id' => $operator->id,
+            'actor_label' => $operator->name,
+            'event' => 'sync.queued',
+            'subject_type' => 'SyncRun',
+            'subject_id' => $manualRun->id,
+            'ip_address' => '10.0.0.20',
+            'user_agent' => 'Seeder/Console',
+            'meta' => ['channel' => '平台一-北美', 'trigger_type' => 'manual', 'run_id' => $manualRun->id],
+            'created_at' => now()->subHours(4),
+            'updated_at' => now()->subHours(4),
+        ]);
+
+        AuditLog::query()->create([
+            'user_id' => null,
+            'actor_label' => 'public-web',
+            'event' => 'storefront.plan.added',
+            'subject_type' => 'Product',
+            'subject_id' => $products['CARE-1001']->id,
+            'ip_address' => '203.0.113.15',
+            'user_agent' => 'Seeder/Console',
+            'meta' => ['sku' => 'CARE-1001', 'quantity' => 2],
+            'created_at' => now()->subHours(2),
+            'updated_at' => now()->subHours(2),
+        ]);
+
+        AuditLog::query()->create([
+            'user_id' => $analyst->id,
+            'actor_label' => $analyst->name,
+            'event' => 'auth.logout',
+            'ip_address' => '10.0.0.18',
+            'user_agent' => 'Seeder/Console',
+            'meta' => ['role' => 'analyst', 'last_synced_run' => $scheduledRun->id],
+            'created_at' => now()->subHour(),
+            'updated_at' => now()->subHour(),
         ]);
     }
 }

@@ -17,10 +17,15 @@
     ];
 @endphp
 <body class="storefront-body">
+    <div class="storefront-utility">
+        <span>公开商品站点</span>
+        <span>商品陈列、意向协同与后台运营共用同一套数据模型</span>
+    </div>
+
     <header class="storefront-header">
         <div class="storefront-brand">
-            <a href="{{ route('storefront.home') }}">选品前台</a>
-            <span>公开浏览与意向协同</span>
+            <a href="{{ route('storefront.home') }}">零售样板站</a>
+            <span>更像真实电商前台的中文商品站点</span>
         </div>
 
         <nav class="storefront-nav">
@@ -28,6 +33,11 @@
             <a href="{{ route('storefront.catalog') }}" @class(['is-active' => request()->routeIs('storefront.catalog') || request()->routeIs('storefront.products.show')])>商品目录</a>
             <a href="{{ route('storefront.plan.index') }}" @class(['is-active' => request()->routeIs('storefront.plan.*')])>意向清单</a>
         </nav>
+
+        <form class="storefront-search" method="get" action="{{ route('storefront.catalog') }}">
+            <input type="search" name="search" value="{{ request('search') }}" placeholder="搜索商品名、SKU 或经营卖点">
+            <button type="submit">搜索</button>
+        </form>
 
         <div class="storefront-actions">
             <a class="plan-badge" href="{{ route('storefront.plan.index') }}">
@@ -57,8 +67,8 @@
 
     <footer class="storefront-footer">
         <div>
-            <strong>中性样板项目</strong>
-            <p>仅用于展示真实电商场景下的前台与后台协同，不映射任何具体公司或业务主体。</p>
+            <strong>中性开源样板项目</strong>
+            <p>仅用于展示真实电商场景下的前台商品陈列、意向协同与后台运营，不映射任何具体公司或业务主体。</p>
         </div>
 
         <div class="footer-links">

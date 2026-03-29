@@ -7,6 +7,9 @@
     <a class="secondary-button" href="{{ route('admin.insights') }}">查看可视化</a>
     <a class="secondary-button" href="{{ route('storefront.home') }}" target="_blank" rel="noreferrer">前台预览</a>
     <a class="secondary-button" href="{{ route('admin.channels.index') }}">查看渠道</a>
+    @if (auth()->user()?->canManageOperations())
+        <a class="secondary-button" href="{{ route('admin.audit.index') }}">操作审计</a>
+    @endif
     <a class="primary-button" href="{{ route('admin.orders.index') }}">查看订单</a>
 @endsection
 
@@ -43,6 +46,61 @@
         <article class="metric-card">
             <span>活跃渠道</span>
             <strong>{{ $summary['healthy_channels'] }}</strong>
+        </article>
+    </section>
+
+    <section class="risk-board-grid">
+        @foreach ($riskBoard as $item)
+            <article class="risk-board-card tone-{{ $item['tone'] }}">
+                <span>{{ $item['title'] }}</span>
+                <strong>{{ $item['value'] }}</strong>
+                <p>{{ $item['copy'] }}</p>
+            </article>
+        @endforeach
+    </section>
+
+    <section class="panel-grid panel-grid-2">
+        <article class="panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">履约节奏</p>
+                    <h2>订单管道</h2>
+                </div>
+            </div>
+
+            <div class="pipeline-grid">
+                @foreach ($orderPipeline as $item)
+                    <article class="pipeline-card">
+                        <span class="status-chip tone-{{ $item['tone'] }}">{{ $item['label'] }}</span>
+                        <strong>{{ $item['count'] }} 单</strong>
+                        <p>对应销售额 ${{ number_format($item['revenue'], 2) }}</p>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+
+        <article class="panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">供应脉冲</p>
+                    <h2>供应商质量与供给</h2>
+                </div>
+            </div>
+
+            <div class="row-list">
+                @foreach ($supplierPulse as $item)
+                    <article class="row-card">
+                        <div class="row-main">
+                            <strong>{{ $item['supplier']->name }}</strong>
+                            <p>{{ $item['product_count'] }} 个 SKU · 平均毛利 {{ number_format($item['average_margin'], 1) }}% · 可售 {{ $item['available_inventory'] }}</p>
+                        </div>
+                        <div class="row-meta">
+                            <span class="status-chip tone-success">质量 {{ $item['supplier']->quality_score }}</span>
+                            <span>{{ $item['supplier']->lead_time_days }} 天</span>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
         </article>
     </section>
 

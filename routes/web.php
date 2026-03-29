@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\ChannelController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
@@ -39,9 +40,14 @@ Route::prefix('admin')
     ->group(function (): void {
         Route::get('/', DashboardController::class)->name('dashboard');
         Route::get('/insights', VisualizationController::class)->name('insights');
+        Route::get('/audit', [AuditLogController::class, 'index'])
+            ->middleware('ops.manage')
+            ->name('audit.index');
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
         Route::get('/channels', [ChannelController::class, 'index'])->name('channels.index');
-        Route::post('/channels/{channel}/sync', [ChannelController::class, 'sync'])->name('channels.sync');
+        Route::post('/channels/{channel}/sync', [ChannelController::class, 'sync'])
+            ->middleware('ops.manage')
+            ->name('channels.sync');
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     });

@@ -18,6 +18,10 @@ use Throwable;
 
 class ChannelSyncService
 {
+    public function __construct(private AuditLogService $auditLogService)
+    {
+    }
+
     public function queue(Channel $channel, string $triggerType = 'manual', ?User $user = null): SyncRun
     {
         $run = SyncRun::query()->create([
@@ -28,6 +32,12 @@ class ChannelSyncService
             'notes' => $user
                 ? "由 {$user->name} 发起排队。"
                 : '由接口令牌发起排队。',
+        ]);
+
+        $this->auditLogService->record('sync.queued', user: $user, actorLabel: $user?->name ?? 'api-token', subject: $run, meta: [
+            'channel' => $channel->name,
+            'trigger_type' => $triggerType,
+            'run_id' => $run->id,
         ]);
 
         RunChannelSync::dispatch($run->id);
@@ -104,6 +114,13 @@ class ChannelSyncService
                 'finished_at' => now(),
             ]);
 
+            $this->auditLogService->record('sync.completed', user: $run->user, actorLabel: $run->user?->name ?? 'system-worker', subject: $run, meta: [
+                'channel' => $channel->name,
+                'trigger_type' => $run->trigger_type,
+                'processed_count' => $processedCount,
+                'run_id' => $run->id,
+            ]);
+
             Cache::forget('dashboard:summary');
 
             return $run->fresh(['channel', 'user']);
@@ -112,6 +129,13 @@ class ChannelSyncService
                 'status' => 'failed',
                 'notes' => $exception->getMessage(),
                 'finished_at' => now(),
+            ]);
+
+            $this->auditLogService->record('sync.failed', user: $run->user, actorLabel: $run->user?->name ?? 'system-worker', subject: $run, meta: [
+                'channel' => $channel->name,
+                'trigger_type' => $run->trigger_type,
+                'run_id' => $run->id,
+                'message' => $exception->getMessage(),
             ]);
 
             throw $exception;

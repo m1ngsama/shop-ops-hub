@@ -18,7 +18,7 @@ class DashboardTest extends TestCase
         $response = $this->get('/');
 
         $response->assertOk();
-        $response->assertSee('选品前台');
+        $response->assertSee('零售样板站');
         $response->assertSee('浏览商品目录');
     }
 
@@ -39,7 +39,8 @@ class DashboardTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('运营总览');
-        $response->assertSee('低库存列表');
+        $response->assertSee('订单管道');
+        $response->assertSee('供应商质量与供给');
         $response->assertSee('平台一-北美');
     }
 }

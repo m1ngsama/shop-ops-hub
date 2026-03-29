@@ -27,6 +27,12 @@
                 <span class="metric-pill">安全库存 {{ $product->safety_stock }}</span>
             </div>
 
+            <div class="rating-row detail-rating-row">
+                <span class="rating-stars">★★★★★</span>
+                <strong>{{ number_format($averageScore, 1) }}</strong>
+                <span>{{ $reviewCount }} 条反馈 · 平均转化 {{ number_format($averageConversion, 1) }}%</span>
+            </div>
+
             <form method="post" action="{{ route('storefront.plan.store', ['product' => $product]) }}" class="detail-form">
                 @csrf
                 <label class="field field-inline">
@@ -103,6 +109,22 @@
                 </article>
             </div>
 
+            <div class="voice-grid compact-voice-grid">
+                <article class="voice-card">
+                    <div class="voice-head">
+                        <div>
+                            <span class="surface-tag">成交信号</span>
+                            <strong>详情页需要先回答“为什么买”</strong>
+                        </div>
+                    </div>
+                    <p>当前这款商品在 {{ $product->listings->count() }} 个渠道刊登，累计 {{ $reviewCount }} 条反馈，说明它不是只有内部视角的数据点。</p>
+                    <div class="pill-row">
+                        <span class="metric-pill">转化 {{ number_format($averageConversion, 1) }}%</span>
+                        <span class="metric-pill">评分 {{ number_format($averageScore, 1) }}</span>
+                    </div>
+                </article>
+            </div>
+
             <div class="table-shell">
                 <table>
                     <thead>
@@ -154,6 +176,39 @@
                 @endforeach
             </div>
         </article>
+    </section>
+
+    <section class="storefront-section">
+        <div class="section-heading">
+            <div>
+                <p class="hero-kicker">购买判断</p>
+                <h2>常见问题</h2>
+            </div>
+        </div>
+
+        <div class="faq-grid">
+            @foreach ($faqItems as $item)
+                <article class="faq-card">
+                    <strong>{{ $item['question'] }}</strong>
+                    <p>{{ $item['answer'] }}</p>
+                </article>
+            @endforeach
+        </div>
+    </section>
+
+    <section class="storefront-section">
+        <div class="section-heading">
+            <div>
+                <p class="hero-kicker">组合推荐</p>
+                <h2>适合一起陈列的商品</h2>
+            </div>
+        </div>
+
+        <div class="product-grid product-grid-compact">
+            @foreach ($companionProducts as $companionProduct)
+                @include('storefront.partials.product-card', ['product' => $companionProduct])
+            @endforeach
+        </div>
     </section>
 
     <section class="storefront-section">

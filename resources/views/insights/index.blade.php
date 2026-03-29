@@ -355,4 +355,65 @@
             </div>
         </article>
     </section>
+
+    <section class="panel-grid panel-grid-2">
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">上架准备度</p>
+                    <h2>哪些商品适合继续扩量</h2>
+                </div>
+            </div>
+
+            <div class="legend-list">
+                @foreach ($assortmentReadiness as $item)
+                    <article class="legend-row">
+                        <div class="legend-main">
+                            <strong>{{ $item['product']->name }}</strong>
+                            <span class="table-subtext">{{ $item['product']->sku }} · 评价 {{ $item['review_count'] }} · 毛利 {{ number_format($item['margin_rate'], 1) }}%</span>
+                        </div>
+                        <div class="row-meta">
+                            <span class="status-chip tone-success">准备度 {{ number_format($item['readiness_score'], 1) }}</span>
+                            <span>可售 {{ $item['inventory'] }}</span>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+
+            <div class="supplier-summary-grid">
+                @foreach ($supplierPulse as $supplier)
+                    <article class="summary-card">
+                        <span>{{ $supplier->name }}</span>
+                        <strong>质量 {{ $supplier->quality_score }}</strong>
+                        <p>{{ $supplier->products_count }} 个 SKU · 交期 {{ $supplier->lead_time_days }} 天</p>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">审计轨迹</p>
+                    <h2>最近关键动作</h2>
+                </div>
+            </div>
+
+            <div class="timeline-list">
+                @foreach ($recentAuditLogs as $log)
+                    <article class="timeline-item">
+                        <span class="timeline-marker tone-brand"></span>
+                        <div class="timeline-copy">
+                            <strong>{{ $log->event }}</strong>
+                            <p>{{ $log->created_at?->format('m-d H:i') }} · {{ $log->user?->name ?? $log->actor_label ?? 'system' }}</p>
+                        </div>
+                        <div class="row-meta">
+                            <span class="status-chip tone-neutral">{{ $log->subject_type ?? '系统' }}</span>
+                            <span>{{ $log->subject_id ? '#'.$log->subject_id : '无对象' }}</span>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+    </section>
 @endsection

@@ -762,7 +762,7 @@ tbody tr:hover {
 
 .storefront-header {
     display: grid;
-    grid-template-columns: 220px minmax(0, 1fr) auto;
+    grid-template-columns: 220px minmax(0, 0.75fr) minmax(280px, 1fr) auto;
     align-items: center;
     gap: 16px;
     padding: 22px 0 18px;
@@ -1670,6 +1670,261 @@ tbody tr:hover {
     margin-top: 10px;
 }
 
+.sidebar-role {
+    margin-top: 12px;
+}
+
+.storefront-utility {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    width: min(1240px, calc(100% - 32px));
+    margin: 0 auto;
+    padding-top: 14px;
+    color: #5d6773;
+    font-size: 0.85rem;
+}
+
+.storefront-search {
+    display: flex;
+    align-items: center;
+    min-height: 46px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid rgba(19, 25, 33, 0.08);
+    background: #fff;
+    box-shadow: var(--shadow);
+}
+
+.storefront-search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    padding: 0 16px;
+    outline: 0;
+}
+
+.storefront-search button {
+    height: 46px;
+    padding: 0 18px;
+    border: 0;
+    background: var(--accent);
+    color: #111;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.service-band,
+.voice-grid,
+.faq-grid,
+.risk-board-grid,
+.pipeline-grid,
+.supplier-summary-grid,
+.audit-filter-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.service-band {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.service-band-card,
+.voice-card,
+.faq-card,
+.pipeline-card,
+.risk-board-card {
+    padding: 20px;
+    border-radius: 22px;
+    border: 1px solid rgba(19, 25, 33, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 12px 30px rgba(25, 36, 46, 0.08);
+}
+
+.service-band-card {
+    display: grid;
+    gap: 10px;
+}
+
+.service-band-card p,
+.faq-card p,
+.risk-board-card p {
+    color: #55616d;
+    line-height: 1.7;
+}
+
+.service-band-card b {
+    font-size: 1.25rem;
+}
+
+.catalog-chip-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.catalog-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(19, 25, 33, 0.08);
+    color: #324454;
+    font-weight: 600;
+}
+
+.catalog-chip.is-active,
+.catalog-chip:hover {
+    background: rgba(243, 168, 71, 0.16);
+    border-color: rgba(211, 135, 31, 0.45);
+}
+
+.rating-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    color: #55616d;
+    font-size: 0.9rem;
+}
+
+.detail-rating-row {
+    margin-top: 16px;
+}
+
+.rating-stars {
+    letter-spacing: 0.12em;
+    color: #f2992e;
+    font-size: 0.92rem;
+}
+
+.voice-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.voice-card {
+    display: grid;
+    gap: 12px;
+}
+
+.voice-card p {
+    line-height: 1.7;
+    color: #314253;
+}
+
+.voice-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.voice-head strong,
+.faq-card strong,
+.risk-board-card strong,
+.pipeline-card strong {
+    display: block;
+}
+
+.voice-score {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    min-height: 36px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(243, 168, 71, 0.16);
+    color: #8b5a11;
+    font-weight: 800;
+}
+
+.compact-voice-grid {
+    margin-top: 18px;
+    grid-template-columns: 1fr;
+}
+
+.faq-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.faq-card {
+    display: grid;
+    gap: 10px;
+}
+
+.product-grid-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.risk-board-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.risk-board-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.risk-board-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: currentColor;
+    opacity: 0.9;
+}
+
+.risk-board-card span {
+    color: #55616d;
+    font-size: 0.86rem;
+}
+
+.risk-board-card strong {
+    margin-top: 10px;
+    font-size: 1.8rem;
+}
+
+.pipeline-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.pipeline-card {
+    display: grid;
+    gap: 10px;
+    background: var(--panel-soft);
+}
+
+.pipeline-card p {
+    color: #55616d;
+}
+
+.supplier-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 18px;
+}
+
+.audit-filter-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: end;
+}
+
+.audit-filter-actions {
+    align-self: end;
+}
+
+.audit-meta-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.84rem;
+    color: #4b5563;
+}
+
 @media (max-width: 1180px) {
     .feature-grid,
     .product-grid,
@@ -1680,7 +1935,14 @@ tbody tr:hover {
     .collection-grid,
     .supplier-grid,
     .journey-grid,
-    .feature-grid-4 {
+    .feature-grid-4,
+    .service-band,
+    .voice-grid,
+    .faq-grid,
+    .risk-board-grid,
+    .pipeline-grid,
+    .supplier-summary-grid,
+    .audit-filter-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -1696,6 +1958,7 @@ tbody tr:hover {
 }
 
 @media (max-width: 960px) {
+    .storefront-utility,
     .storefront-header {
         grid-template-columns: 1fr;
     }
@@ -1710,6 +1973,10 @@ tbody tr:hover {
     .product-card-head {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .storefront-search {
+        width: 100%;
     }
 }
 
@@ -1741,7 +2008,15 @@ tbody tr:hover {
     .collection-grid,
     .supplier-grid,
     .journey-grid,
-    .feature-grid-4 {
+    .feature-grid-4,
+    .service-band,
+    .voice-grid,
+    .faq-grid,
+    .risk-board-grid,
+    .pipeline-grid,
+    .supplier-summary-grid,
+    .audit-filter-grid,
+    .product-grid-compact {
         grid-template-columns: 1fr;
     }
 
@@ -1768,6 +2043,10 @@ tbody tr:hover {
     .catalog-hero h1,
     .detail-copy h1 {
         font-size: 2rem;
+    }
+
+    .storefront-utility {
+        flex-direction: column;
     }
 
     .timeline-item {

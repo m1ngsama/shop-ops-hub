@@ -4,8 +4,8 @@
     <section class="catalog-hero">
         <div>
             <p class="hero-kicker">商品目录</p>
-            <h1>按类目、价格、毛利和交期，快速筛选候选商品。</h1>
-            <p class="hero-text">公开前台展示商品选择逻辑，后台继续承接订单、渠道同步和经营分析。</p>
+            <h1>按类目、价格、毛利和交期，快速筛出值得继续看的商品。</h1>
+            <p class="hero-text">目录页承担真正的浏览任务：搜关键词、看筛选、做比较，再把候选商品带去详情页和意向清单。</p>
         </div>
 
         <div class="catalog-summary">
@@ -22,6 +22,18 @@
                 <strong>${{ number_format((float) $planSummary['estimated_value'], 2) }}</strong>
             </article>
         </div>
+    </section>
+
+    <section class="catalog-chip-strip">
+        <a class="catalog-chip @if($filters['category'] === '') is-active @endif" href="{{ route('storefront.catalog') }}">全部类目</a>
+        @foreach ($categories as $category)
+            <a
+                class="catalog-chip @if($filters['category'] === $category) is-active @endif"
+                href="{{ route('storefront.catalog', array_filter(['category' => $category, 'search' => $filters['search'], 'sort' => $filters['sort']])) }}"
+            >
+                {{ $category }}
+            </a>
+        @endforeach
     </section>
 
     <section class="catalog-layout">
@@ -104,6 +116,7 @@
                 <div>
                     <p class="hero-kicker">结果列表</p>
                     <h2>共 {{ $products->total() }} 个候选商品</h2>
+                    <p class="page-copy">当前排序：{{ ['recommended' => '推荐优先', 'margin' => '毛利优先', 'lead_time' => '交期优先', 'price_low' => '价格从低到高', 'price_high' => '价格从高到低'][$filters['sort']] ?? '推荐优先' }}</p>
                 </div>
             </div>
 

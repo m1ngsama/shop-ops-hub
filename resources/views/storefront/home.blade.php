@@ -1,13 +1,13 @@
-@extends('layouts.storefront', ['title' => '前台选品站'])
+@extends('layouts.storefront', ['title' => '零售样板站'])
 
 @section('content')
     <section class="hero-shell">
         <div class="hero-copy">
-            <p class="hero-kicker">公开前台样板</p>
-            <h1>把商品浏览、供给判断和意向协同，放到一套真正能用的前台程序里。</h1>
+            <p class="hero-kicker">公开商品前台</p>
+            <h1>把商品陈列、买家决策和后台协同，收进一个更像真实电商的中文前台里。</h1>
             <p class="hero-text">
-                这个前台不再只是一个登录前的空壳。它提供公开商品目录、类目筛选、详情页和会话意向清单，
-                让选品、询盘和后台运营之间形成完整闭环。
+                这一版前台不再只是登录前的占位页。它提供搜索、目录筛选、场景化陈列、商品详情、买家反馈摘要和意向清单，
+                让公开浏览、经营判断与后台运营回到同一条成交路径上。
             </p>
 
             <div class="pill-row hero-pills">
@@ -62,34 +62,45 @@
         </div>
     </section>
 
+    <section class="service-band">
+        @foreach ($servicePromises as $promise)
+            <article class="service-band-card">
+                <span class="surface-tag">前台能力</span>
+                <strong>{{ $promise['title'] }}</strong>
+                <p>{{ $promise['copy'] }}</p>
+                <b>{{ $promise['value'] }}</b>
+            </article>
+        @endforeach
+    </section>
+
     <section class="feature-grid">
         <article class="feature-card">
-            <span class="surface-tag">目录</span>
-            <h2>商品目录不是静态展示</h2>
-            <p>支持关键词、类目和排序筛选，前台可以直接完成初步选品与比较。</p>
+            <span class="surface-tag">搜索</span>
+            <h2>先搜索，再浏览</h2>
+            <p>顶部搜索、目录筛选和商品比较同时存在，让站点更接近真正的零售前台而不是单页展示。</p>
         </article>
         <article class="feature-card">
-            <span class="surface-tag">意向</span>
-            <h2>会话级意向清单</h2>
-            <p>把感兴趣的商品加入清单，保留数量和预估金额，作为后续询盘和运营动作入口。</p>
+            <span class="surface-tag">详情</span>
+            <h2>详情页承担成交解释</h2>
+            <p>每个商品详情页都同时回答价格、供给、交期、评价规模和经营建议，减少跳转损耗。</p>
         </article>
         <article class="feature-card">
-            <span class="surface-tag">后台</span>
-            <h2>与后台看板联动</h2>
-            <p>同一套商品、库存和渠道数据同时驱动前台浏览页与后台可视化驾驶舱。</p>
+            <span class="surface-tag">协同</span>
+            <h2>前台与后台不是两套系统</h2>
+            <p>同一套商品、库存、渠道和订单数据同时驱动公开前台和后台控制台，避免展示与执行割裂。</p>
         </article>
     </section>
 
     <section class="editorial-band">
         <article class="editorial-card editorial-card-strong">
             <p class="hero-kicker">陈列策略</p>
-            <h2>前台不是宣传页，而是可直接服务选品的商品场。</h2>
-            <p>页面结构围绕“看商品、比商品、加入意向清单、回到后台处理”展开，避免只有视觉没有动作。</p>
+            <h2>前台不是宣传页，而是能支持成交决策的商品场。</h2>
+            <p>页面结构围绕“搜商品、看详情、比方案、加意向、回后台执行”展开，不把用户停留在空洞视觉层。</p>
         </article>
         <article class="editorial-card">
             <span class="surface-tag">协同目标</span>
             <strong>前台负责发现与比较，后台负责定价、库存与执行。</strong>
-            <p>这套程序把公开浏览、内部经营和任务执行放到同一份数据模型上。</p>
+            <p>这套程序把商品浏览、买家判断、运营执行和任务回溯全部建立在同一份数据模型上。</p>
         </article>
     </section>
 
@@ -154,7 +165,7 @@
         <div class="section-heading">
             <div>
                 <p class="hero-kicker">推荐陈列</p>
-                <h2>前台商品卡片</h2>
+                <h2>像成熟站点一样展示候选商品</h2>
             </div>
             <a class="text-link" href="{{ route('storefront.catalog') }}">全部商品</a>
         </div>
@@ -230,6 +241,35 @@
     <section class="storefront-section">
         <div class="section-heading">
             <div>
+                <p class="hero-kicker">买家反馈摘要</p>
+                <h2>把评价与转化信号也前置到首页</h2>
+            </div>
+        </div>
+
+        <div class="voice-grid">
+            @foreach ($buyerVoices as $voice)
+                <article class="voice-card">
+                    <div class="voice-head">
+                        <div>
+                            <span class="surface-tag">{{ $voice['product']->category }}</span>
+                            <strong>{{ $voice['product']->name }}</strong>
+                        </div>
+                        <span class="voice-score">{{ number_format($voice['score'], 1) }}</span>
+                    </div>
+                    <p>“{{ $voice['quote'] }}”</p>
+                    <div class="pill-row">
+                        <span class="metric-pill">评价 {{ $voice['review_count'] }}</span>
+                        <span class="metric-pill">转化 {{ number_format($voice['conversion'], 1) }}%</span>
+                        <span class="metric-pill">{{ $voice['product']->sku }}</span>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+    </section>
+
+    <section class="storefront-section">
+        <div class="section-heading">
+            <div>
                 <p class="hero-kicker">渠道准备度</p>
                 <h2>前台也能表达供给和履约能力</h2>
             </div>
@@ -257,7 +297,7 @@
         <div class="section-heading">
             <div>
                 <p class="hero-kicker">供应协同</p>
-                <h2>把供应商稳定性也展示出来</h2>
+                <h2>供应商稳定性应该被看见</h2>
             </div>
         </div>
 
