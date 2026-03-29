@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? '前台选品站' }}</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @include('partials.style-entry')
 </head>
 @php
     $planSummary = $planSummary ?? [
@@ -18,14 +18,14 @@
 @endphp
 <body class="storefront-body">
     <div class="storefront-utility">
-        <span>公开商品站点</span>
-        <span>商品陈列、意向协同与后台运营共用同一套数据模型</span>
+        <span>Merchandising Experience</span>
+        <span>用更克制的前端语言呈现商品、供给与意向协同</span>
     </div>
 
     <header class="storefront-header">
         <div class="storefront-brand">
-            <a href="{{ route('storefront.home') }}">零售样板站</a>
-            <span>更像真实电商前台的中文商品站点</span>
+            <a href="{{ route('storefront.home') }}">Shop Ops Hub</a>
+            <span>Apple Developer 风格启发下的商品陈列与协同前台</span>
         </div>
 
         <nav class="storefront-nav">
@@ -67,8 +67,8 @@
 
     <footer class="storefront-footer">
         <div>
-            <strong>中性开源样板项目</strong>
-            <p>仅用于展示真实电商场景下的前台商品陈列、意向协同与后台运营，不映射任何具体公司或业务主体。</p>
+            <strong>Designed for browsing, comparison, and action.</strong>
+            <p>这是一个中性开源样板，用统一数据模型串起公开商品前台、意向清单与后台运营，不映射任何具体公司或业务主体。</p>
         </div>
 
         <div class="footer-links">

@@ -3,12 +3,17 @@ set -e
 
 APP_DIR="${APP_DIR:-/opt/shop-ops-hub}"
 REPO_URL="${REPO_URL:-https://github.com/m1ngsama/shop-ops-hub.git}"
+BRANCH="${BRANCH:-main}"
 
 if [ ! -d "$APP_DIR/.git" ]; then
-    git clone "$REPO_URL" "$APP_DIR"
+    git clone --branch "$BRANCH" "$REPO_URL" "$APP_DIR"
 fi
 
 cd "$APP_DIR"
+
+git fetch origin "$BRANCH"
+git checkout "$BRANCH"
+git pull --ff-only origin "$BRANCH"
 
 if [ ! -f .env.production ]; then
     cp deploy/production.env.example .env.production
@@ -16,4 +21,5 @@ if [ ! -f .env.production ]; then
 fi
 
 docker compose --env-file .env.production up -d --build
-docker compose --env-file .env.production exec app php artisan migrate --force --seed
+docker compose --env-file .env.production restart web
+docker compose --env-file .env.production exec app php artisan migrate --force

@@ -3,11 +3,11 @@
 @section('content')
     <section class="hero-shell">
         <div class="hero-copy">
-            <p class="hero-kicker">公开商品前台</p>
-            <h1>把商品陈列、买家决策和后台协同，收进一个更像真实电商的中文前台里。</h1>
+            <p class="hero-kicker">Merchandising Frontend</p>
+            <h1>重新组织商品前台，让浏览、比较和协同看起来更像一套完整产品，而不是后台附属页。</h1>
             <p class="hero-text">
-                这一版前台不再只是登录前的占位页。它提供搜索、目录筛选、场景化陈列、商品详情、买家反馈摘要和意向清单，
-                让公开浏览、经营判断与后台运营回到同一条成交路径上。
+                这一版参考 Apple Developer 首页的信息节奏，强调清晰的分区、大尺度标题、轻量卡片和更干净的留白，
+                让公开浏览、经营判断与后台运营回到同一条连续的成交路径上。
             </p>
 
             <div class="pill-row hero-pills">

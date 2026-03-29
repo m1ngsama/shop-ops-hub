@@ -1,4 +1,16 @@
+/*
+ |--------------------------------------------------------------------------
+ | Vite App Entry
+ |--------------------------------------------------------------------------
+ |
+ | This file is the canonical Vite CSS entry. The redesign styles are bridged
+ | through resources/css/bridge.css for now so the @vite path and the legacy
+ | public/css/app.css fallback stay visually aligned.
+ |
+ */
+
 @import 'tailwindcss';
+@import './bridge.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

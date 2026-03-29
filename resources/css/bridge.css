@@ -1,0 +1,12 @@
+/*
+ |--------------------------------------------------------------------------
+ | Redesign Bridge Styles
+ |--------------------------------------------------------------------------
+ |
+ | Temporary bridge so the Vite entry and the direct public asset render the
+ | same redesign. Replace this import with first-party CSS modules under
+ | resources/css once the public stylesheet is fully migrated.
+ |
+ */
+
+@import '../../public/css/app.css';

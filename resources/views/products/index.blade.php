@@ -8,11 +8,43 @@
 @endsection
 
 @section('content')
+    @php
+        $visibleProducts = $products->getCollection();
+        $activeProducts = $visibleProducts->where('status', 'active')->count();
+        $inventoryTotal = $visibleProducts->sum(fn ($product) => $product->availableInventory());
+    @endphp
+
+    <section class="admin-hero-grid admin-hero-grid-compact">
+        <article class="admin-callout">
+            <p class="page-kicker">商品视图</p>
+            <h2>把 SKU、类目、供给与利润判断放进同一筛选工作流。</h2>
+            <p>
+                商品中心不只是查表，而是帮助你快速判断哪些货盘适合继续放量、哪些需要补货、哪些应该暂停观察。
+            </p>
+        </article>
+
+        <article class="admin-stat-ribbon">
+            <div>
+                <span>当前页商品</span>
+                <strong>{{ $visibleProducts->count() }}</strong>
+            </div>
+            <div>
+                <span>上架中</span>
+                <strong>{{ $activeProducts }}</strong>
+            </div>
+            <div>
+                <span>库存总量</span>
+                <strong>{{ $inventoryTotal }}</strong>
+            </div>
+        </article>
+    </section>
+
     <section class="panel">
         <div class="panel-header">
             <div>
                 <p class="page-kicker">筛选条件</p>
                 <h2>快速定位商品</h2>
+                <p class="page-copy">根据关键词、状态和类目缩小范围，优先找出当前最值得处理的商品集合。</p>
             </div>
         </div>
 
@@ -53,6 +85,7 @@
             <div>
                 <p class="page-kicker">商品列表</p>
                 <h2>共 {{ $products->total() }} 个商品</h2>
+                <p class="page-copy">每行同时给出供给、价格、毛利和状态，减少在详情页之间反复跳转。</p>
             </div>
         </div>
 

@@ -45,6 +45,19 @@
         </div>
     </section>
 
+    <section class="storefront-editorial-split">
+        <article class="editorial-card editorial-card-strong">
+            <p class="hero-kicker">Why This Product</p>
+            <h2>详情页首先应该回答“为什么值得继续看”，而不是只重复参数。</h2>
+            <p>这款商品的阅读重点应放在售价、毛利、库存、口碑和渠道准备度之间的平衡，而不是单个指标本身。</p>
+        </article>
+        <article class="editorial-card">
+            <span class="surface-tag">当前建议</span>
+            <strong>{{ $product->lead_time_days <= 18 ? '适合快速试投与组合陈列' : '更适合计划性备货与节奏化投放' }}</strong>
+            <p>结合交期、库存与渠道覆盖，先在高匹配场景下做小批量验证，再决定是否扩量。</p>
+        </article>
+    </section>
+
     <section class="feature-grid feature-grid-4">
         <article class="feature-card compact-card">
             <span class="surface-tag">供给</span>
@@ -73,11 +86,6 @@
             <p class="hero-kicker">经营判断</p>
             <h2>{{ $product->marketplace_focus }}</h2>
             <p>{{ $product->selling_points }}</p>
-        </article>
-        <article class="editorial-card">
-            <span class="surface-tag">当前建议</span>
-            <strong>{{ $product->lead_time_days <= 18 ? '适合快速试投与组合陈列' : '更适合计划性备货与节奏化投放' }}</strong>
-            <p>结合交期、库存与渠道覆盖，先在高匹配场景下做小批量验证，再决定是否扩量。</p>
         </article>
     </section>
 

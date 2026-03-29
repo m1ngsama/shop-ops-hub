@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? '商运后台' }}</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @include('partials.style-entry')
 </head>
 <body class="console-body">
+    <div class="console-utility-bar">
+        <span>Operations System</span>
+        <span>以更清晰的层级组织商品、渠道、订单、同步与经营判断</span>
+    </div>
+
     <header class="console-topbar">
         <div class="brand-group">
-            <a class="brand-mark" href="{{ route('admin.dashboard') }}">商运后台</a>
-            <span class="brand-subtitle">内部运营控制台</span>
+            <span class="brand-badge">Shop Ops Hub</span>
+            <a class="brand-mark" href="{{ route('admin.dashboard') }}">Operations Console</a>
+            <span class="brand-subtitle">面向商品、履约、渠道与经营判断的统一控制台</span>
         </div>
 
         <form class="topbar-search" method="get" action="{{ route('admin.products.index') }}">
@@ -32,6 +38,11 @@
 
     <div class="console-shell">
         <aside class="console-sidebar">
+            <div class="sidebar-intro">
+                <p>Console Navigation</p>
+                <strong>把风险、执行与增长信号收进同一视图。</strong>
+            </div>
+
             <nav class="side-nav">
                 <a href="{{ route('admin.dashboard') }}" @class(['is-active' => request()->routeIs('admin.dashboard')])>总览</a>
                 <a href="{{ route('admin.insights') }}" @class(['is-active' => request()->routeIs('admin.insights')])>可视化</a>
@@ -51,7 +62,7 @@
             </div>
 
             <div class="sidebar-card">
-                <span class="sidebar-label">系统特性</span>
+                <span class="sidebar-label">系统能力</span>
                 <ul class="sidebar-list">
                     <li>登录保护</li>
                     <li>接口令牌</li>
@@ -81,6 +92,21 @@
                         @yield('page_actions')
                     </div>
                 @endif
+            </section>
+
+            <section class="page-header-band">
+                <article>
+                    <span>响应节奏</span>
+                    <strong>先处理风险，再放大增长</strong>
+                </article>
+                <article>
+                    <span>信息结构</span>
+                    <strong>同屏组织商品、渠道、订单与同步</strong>
+                </article>
+                <article>
+                    <span>当前角色</span>
+                    <strong>{{ auth()->user()?->roleLabel() ?? '访客' }}</strong>
+                </article>
             </section>
 
             @if (session('status'))

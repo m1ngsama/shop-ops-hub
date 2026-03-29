@@ -11,13 +11,42 @@
     @php
         $orderStatusMap = ['processing' => '处理中', 'shipped' => '已发货', 'delivered' => '已签收'];
         $statusTone = ['processing' => 'warning', 'shipped' => 'info', 'delivered' => 'success'];
+        $visibleOrders = $orders->getCollection();
+        $processingOrders = $visibleOrders->where('status', 'processing')->count();
+        $visibleRevenue = $visibleOrders->sum(fn ($order) => $order->revenue());
     @endphp
+
+    <section class="admin-hero-grid admin-hero-grid-compact">
+        <article class="admin-callout">
+            <p class="page-kicker">订单执行</p>
+            <h2>把履约节奏、成交金额和处理优先级放在一个订单面板里。</h2>
+            <p>
+                订单中心优先服务执行判断，让你先看到需要尽快处理的订单，再去看它们对应的商品、渠道和利润表现。
+            </p>
+        </article>
+
+        <article class="admin-stat-ribbon">
+            <div>
+                <span>当前页订单</span>
+                <strong>{{ $visibleOrders->count() }}</strong>
+            </div>
+            <div>
+                <span>处理中</span>
+                <strong>{{ $processingOrders }}</strong>
+            </div>
+            <div>
+                <span>当前页销售额</span>
+                <strong>${{ number_format($visibleRevenue, 2) }}</strong>
+            </div>
+        </article>
+    </section>
 
     <section class="panel">
         <div class="panel-header">
             <div>
                 <p class="page-kicker">筛选条件</p>
                 <h2>过滤订单</h2>
+                <p class="page-copy">按状态、渠道和关键词收拢工作池，快速回到最需要处理的一批订单。</p>
             </div>
         </div>
 
@@ -59,6 +88,7 @@
             <div>
                 <p class="page-kicker">订单列表</p>
                 <h2>共 {{ $orders->total() }} 条订单</h2>
+                <p class="page-copy">列表同步展示渠道、商品、销售额、毛利和状态，适合直接做履约判断。</p>
             </div>
         </div>
 

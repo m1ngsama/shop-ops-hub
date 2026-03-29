@@ -13,6 +13,31 @@
         $statusTone = ['processing' => 'warning', 'shipped' => 'info', 'delivered' => 'success'];
     @endphp
 
+    <section class="admin-hero-grid">
+        <article class="admin-callout">
+            <p class="page-kicker">Product Detail</p>
+            <h2>围绕单个商品组织供给、刊登、库存与成交，减少来回跳转。</h2>
+            <p>
+                这个页面负责回答一个具体问题：这款商品现在是否值得继续卖、补货或扩量，以及问题究竟出在供给、刊登还是履约侧。
+            </p>
+        </article>
+
+        <article class="admin-stat-ribbon">
+            <div>
+                <span>目标售价</span>
+                <strong>${{ number_format((float) $product->target_price, 2) }}</strong>
+            </div>
+            <div>
+                <span>毛利率</span>
+                <strong>{{ number_format($product->marginRate(), 1) }}%</strong>
+            </div>
+            <div>
+                <span>可售库存</span>
+                <strong>{{ $product->availableInventory() }}</strong>
+            </div>
+        </article>
+    </section>
+
     <section class="metrics-grid">
         <article class="metric-card">
             <span>目标售价</span>
@@ -46,6 +71,7 @@
                 <div>
                     <p class="page-kicker">基础信息</p>
                     <h2>经营属性</h2>
+                    <p class="page-copy">把经营定位、供应商关系和交期前置，便于快速判断这款商品的基本可操作性。</p>
                 </div>
             </div>
 
@@ -84,6 +110,7 @@
                 <div>
                     <p class="page-kicker">库存批次</p>
                     <h2>仓内分布</h2>
+                    <p class="page-copy">直接查看在库、占用和在途数量，判断短期履约压力是否可控。</p>
                 </div>
             </div>
 
@@ -121,6 +148,7 @@
             <div>
                 <p class="page-kicker">渠道刊登</p>
                 <h2>当前刊登状态</h2>
+                <p class="page-copy">集中看外部 SKU、价格、评论、转化和表现分，不用切去渠道页再核对。</p>
             </div>
         </div>
 
@@ -159,6 +187,7 @@
             <div>
                 <p class="page-kicker">订单记录</p>
                 <h2>最近成交</h2>
+                <p class="page-copy">帮助回看这款商品近期的成交质量，而不仅仅是静态商品信息。</p>
             </div>
         </div>
 

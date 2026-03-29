@@ -24,6 +24,20 @@
         </div>
     </section>
 
+    <section class="storefront-editorial-split storefront-editorial-split-compact">
+        <article class="editorial-card editorial-card-strong">
+            <p class="hero-kicker">Browse With Intent</p>
+            <h2>先缩小选择范围，再进入真正值得花时间比较的商品。</h2>
+            <p>目录页承担的是筛选和取舍，不是堆满所有商品。关键词、类目、排序和意向摘要应该一起工作。</p>
+        </article>
+
+        <article class="editorial-card">
+            <span class="surface-tag">当前视图</span>
+            <strong>共 {{ $products->total() }} 个候选商品，当前排序为 {{ ['recommended' => '推荐优先', 'margin' => '毛利优先', 'lead_time' => '交期优先', 'price_low' => '价格从低到高', 'price_high' => '价格从高到低'][$filters['sort']] ?? '推荐优先' }}</strong>
+            <p>把浏览任务压缩到更小、更清晰的一组结果里，再进入详情页做解释和比较。</p>
+        </article>
+    </section>
+
     <section class="catalog-chip-strip">
         <a class="catalog-chip @if($filters['category'] === '') is-active @endif" href="{{ route('storefront.catalog') }}">全部类目</a>
         @foreach ($categories as $category)
@@ -43,6 +57,7 @@
                     <div>
                         <p class="hero-kicker">筛选</p>
                         <h2>过滤商品</h2>
+                        <p class="page-copy">从关键词、类目和排序切入，快速形成更聚焦的商品池。</p>
                     </div>
                 </div>
 
@@ -85,6 +100,7 @@
                     <div>
                         <p class="hero-kicker">意向清单</p>
                         <h2>当前摘要</h2>
+                        <p class="page-copy">把浏览结果和后续动作挂钩，而不是看完就散。</p>
                     </div>
                 </div>
 

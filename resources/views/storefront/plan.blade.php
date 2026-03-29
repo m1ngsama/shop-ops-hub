@@ -24,6 +24,20 @@
         </div>
     </section>
 
+    <section class="storefront-editorial-split storefront-editorial-split-compact">
+        <article class="editorial-card editorial-card-strong">
+            <p class="hero-kicker">Selection Plan</p>
+            <h2>把浏览过程中留下的候选商品，整理成一份可以继续沟通和执行的清单。</h2>
+            <p>意向清单不是购物车，而是把候选商品带回运营动作里的中间层，用来继续询盘、补货和后台协同。</p>
+        </article>
+
+        <article class="editorial-card">
+            <span class="surface-tag">当前摘要</span>
+            <strong>{{ $summary['line_count'] }} 个条目 · {{ $summary['total_quantity'] }} 件 · ${{ number_format((float) $summary['estimated_value'], 2) }}</strong>
+            <p>把数量、金额、库存和供给能力放在一起，避免只看商品名做判断。</p>
+        </article>
+    </section>
+
     @if ($items->isEmpty())
         <section class="empty-panel empty-panel-large">
             <strong>意向清单还是空的。</strong>
@@ -38,6 +52,7 @@
                         <div>
                             <p class="hero-kicker">条目列表</p>
                             <h2>共 {{ $summary['line_count'] }} 个条目</h2>
+                            <p class="page-copy">列表直接承接后续动作，可以更新数量、移除条目，或继续进入详情页验证。</p>
                         </div>
                     </div>
 
@@ -92,6 +107,7 @@
                         <div>
                             <p class="hero-kicker">摘要</p>
                             <h2>当前意向</h2>
+                            <p class="page-copy">用摘要卡把这份清单的经营质量先看清，再决定是否继续推进。</p>
                         </div>
                     </div>
 

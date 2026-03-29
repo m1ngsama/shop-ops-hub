@@ -12,13 +12,41 @@
         $syncStatusMap = ['queued' => '排队中', 'running' => '执行中', 'completed' => '已完成', 'failed' => '失败'];
         $triggerMap = ['manual' => '手动', 'api' => '接口', 'scheduler' => '调度'];
         $toneMap = ['queued' => 'warning', 'running' => 'info', 'completed' => 'success', 'failed' => 'danger'];
+        $activeChannels = $channels->where('is_active', true)->count();
+        $totalRevenue = (float) $performance->sum('revenue');
     @endphp
+
+    <section class="admin-hero-grid admin-hero-grid-compact">
+        <article class="admin-callout">
+            <p class="page-kicker">渠道视图</p>
+            <h2>把渠道状态、同步节奏和营收贡献组织成可执行的节点地图。</h2>
+            <p>
+                这里优先回答两个问题：哪些渠道正在承担生意，哪些渠道正在消耗运营注意力。
+            </p>
+        </article>
+
+        <article class="admin-stat-ribbon">
+            <div>
+                <span>渠道总数</span>
+                <strong>{{ $channels->count() }}</strong>
+            </div>
+            <div>
+                <span>启用中</span>
+                <strong>{{ $activeChannels }}</strong>
+            </div>
+            <div>
+                <span>总营收</span>
+                <strong>${{ number_format($totalRevenue, 2) }}</strong>
+            </div>
+        </article>
+    </section>
 
     <section class="panel">
         <div class="panel-header">
             <div>
                 <p class="page-kicker">接口边界</p>
                 <h2>同步接口默认受保护</h2>
+                <p class="page-copy">把同步方式、鉴权模型和执行模式前置，便于理解渠道操作的系统边界。</p>
             </div>
         </div>
 
@@ -42,7 +70,16 @@
         </div>
     </section>
 
-    <section class="channel-grid">
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="page-kicker">渠道列表</p>
+                <h2>渠道运行状态</h2>
+                <p class="page-copy">每个卡片同时展示状态、收入、订单、刊登和最近同步记录，避免拆散查看。</p>
+            </div>
+        </div>
+
+        <div class="channel-grid">
         @foreach ($channels as $channel)
             @php
                 $latestRun = $channel->syncRuns->first();
@@ -107,5 +144,6 @@
                 </div>
             </article>
         @endforeach
+        </div>
     </section>
 @endsection

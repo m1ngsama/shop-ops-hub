@@ -67,10 +67,52 @@
                 'tone' => $segment['tone'],
                 'value' => round($value, 2),
                 'percentage' => round(($value / $breakdownBase) * 100, 1),
+                'size_class' => match (true) {
+                    (($value / $breakdownBase) * 100) >= 35 => 'composition-segment-xl',
+                    (($value / $breakdownBase) * 100) >= 24 => 'composition-segment-lg',
+                    (($value / $breakdownBase) * 100) >= 14 => 'composition-segment-md',
+                    default => 'composition-segment-sm',
+                },
             ];
         });
         $channelProfitBase = max((float) $channelProfitability->max('gross_profit'), 1);
+
+        $statusSlices = $statusSlices->map(function (array $slice): array {
+            $slice['tone'] = match ($slice['status']) {
+                'processing' => 'warning',
+                'shipped' => 'info',
+                'delivered' => 'success',
+                default => 'neutral',
+            };
+
+            return $slice;
+        });
     @endphp
+
+    <section class="admin-hero-grid">
+        <article class="admin-callout">
+            <p class="page-kicker">Business Signals</p>
+            <h2>把财务走势、订单结构、渠道质量和执行轨迹组织成一套可读的经营叙事。</h2>
+            <p>
+                可视化页不只负责“展示数据”，而是帮助运营快速理解：钱从哪里来，利润流向哪里，风险接下来会落在哪。
+            </p>
+        </article>
+
+        <article class="admin-stat-ribbon">
+            <div>
+                <span>近 7 日销售额</span>
+                <strong>${{ number_format($summary['weekly_revenue'], 2) }}</strong>
+            </div>
+            <div>
+                <span>综合毛利率</span>
+                <strong>{{ number_format($summary['gross_margin_rate'], 1) }}%</strong>
+            </div>
+            <div>
+                <span>低库存风险</span>
+                <strong>{{ $summary['low_stock_count'] }}</strong>
+            </div>
+        </article>
+    </section>
 
     <section class="metrics-grid">
         <article class="metric-card">
@@ -140,7 +182,7 @@
             </div>
 
             <div class="donut-layout">
-                <div class="donut-ring" style="background: conic-gradient({{ $donutGradient }});">
+                <div class="donut-ring donut-ring-static">
                     <div class="donut-core">
                         <strong>{{ $totalOrders }}</strong>
                         <span>订单总量</span>
@@ -151,7 +193,7 @@
                     @foreach ($statusSlices as $slice)
                         <article class="legend-row">
                             <div class="legend-main">
-                                <i class="legend-dot" style="background: {{ $slice['color'] }}"></i>
+                                <i class="legend-dot tone-{{ $slice['tone'] }}"></i>
                                 <strong>{{ $statusMap[$slice['status']] ?? $slice['status'] }}</strong>
                             </div>
                             <div class="row-meta">
@@ -177,7 +219,7 @@
             <div class="composition-shell">
                 <div class="composition-bar">
                     @foreach ($breakdownSegments as $segment)
-                        <span class="composition-segment tone-{{ $segment['tone'] }}" style="width: {{ max($segment['percentage'], 4) }}%"></span>
+                        <span class="composition-segment {{ $segment['size_class'] }} tone-{{ $segment['tone'] }}"></span>
                     @endforeach
                 </div>
 
@@ -208,13 +250,23 @@
 
             <div class="share-stack">
                 @foreach ($channelProfitability as $channel)
+                    @php
+                        $profitRatio = ($channel->gross_profit / $channelProfitBase) * 100;
+                        $profitBarClass = match (true) {
+                            $profitRatio >= 85 => 'share-bar-xl',
+                            $profitRatio >= 65 => 'share-bar-lg',
+                            $profitRatio >= 40 => 'share-bar-md',
+                            $profitRatio >= 18 => 'share-bar-sm',
+                            default => 'share-bar-xs',
+                        };
+                    @endphp
                     <article class="share-row">
                         <div class="share-head">
                             <strong>{{ $channel->name }}</strong>
                             <span>{{ number_format((float) $channel->margin_rate, 1) }}%</span>
                         </div>
                         <div class="share-bar">
-                            <span style="width: {{ max((((float) $channel->gross_profit / $channelProfitBase) * 100), 6) }}%"></span>
+                            <span class="{{ $profitBarClass }}"></span>
                         </div>
                         <p class="table-subtext">
                             销售额 ${{ number_format((float) $channel->revenue, 2) }}
@@ -238,11 +290,21 @@
 
             <div class="matrix-board">
                 @foreach ($listingPerformance as $listing)
-                    <span
-                        class="matrix-dot"
-                        style="left: {{ min(max((float) $listing->conversion_rate * 9, 8), 92) }}%; top: {{ min(max(100 - (float) $listing->performance_score, 12), 84) }}%;"
-                        title="{{ $listing->product->name }} · {{ $listing->channel->name }}"
-                    ></span>
+                    @php
+                        $xBucket = match (true) {
+                            (float) $listing->conversion_rate >= 7.5 => 'x4',
+                            (float) $listing->conversion_rate >= 5.5 => 'x3',
+                            (float) $listing->conversion_rate >= 3.5 => 'x2',
+                            default => 'x1',
+                        };
+                        $yBucket = match (true) {
+                            (float) $listing->performance_score >= 85 => 'y1',
+                            (float) $listing->performance_score >= 70 => 'y2',
+                            (float) $listing->performance_score >= 55 => 'y3',
+                            default => 'y4',
+                        };
+                    @endphp
+                    <span class="matrix-dot {{ $xBucket }} {{ $yBucket }}" title="{{ $listing->product->name }} · {{ $listing->channel->name }}"></span>
                 @endforeach
 
                 <span class="matrix-axis matrix-axis-x">转化率</span>

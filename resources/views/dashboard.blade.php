@@ -20,7 +20,89 @@
         $orderStatusMap = ['processing' => '处理中', 'shipped' => '已发货', 'delivered' => '已签收'];
         $statusTone = ['queued' => 'warning', 'running' => 'info', 'completed' => 'success', 'failed' => 'danger', 'processing' => 'warning', 'shipped' => 'info', 'delivered' => 'success'];
         $triggerMap = ['manual' => '手动', 'api' => '接口', 'scheduler' => '调度'];
+        $topRisk = $riskBoard[0] ?? null;
+        $barClassMap = $revenueTrend->map(function ($point) use ($maxRevenue) {
+            $ratio = ($point['revenue'] / $maxRevenue) * 100;
+
+            return match (true) {
+                $ratio >= 85 => 'bar-fill-xl',
+                $ratio >= 65 => 'bar-fill-lg',
+                $ratio >= 45 => 'bar-fill-md',
+                $ratio >= 25 => 'bar-fill-sm',
+                default => 'bar-fill-xs',
+            };
+        });
     @endphp
+
+    <section class="hero-dashboard-panel">
+        <div class="hero-dashboard-copy">
+            <p class="page-kicker">运营驾驶舱</p>
+            <h2>把风险、成交与执行状态压缩到一个决策首屏。</h2>
+            <p>
+                优先聚焦库存、同步和履约三类高频动作，让运营在进入后台的第一眼就知道哪里需要立刻介入。
+            </p>
+
+            <div class="hero-dashboard-actions">
+                <a class="primary-button" href="{{ route('admin.orders.index') }}">进入订单执行</a>
+                <a class="secondary-button" href="{{ route('admin.products.index') }}">查看商品状态</a>
+            </div>
+        </div>
+
+        <div class="hero-dashboard-stack">
+            @if ($topRisk)
+                <article class="hero-signal-card tone-{{ $topRisk['tone'] }}">
+                    <span>当前最高优先级</span>
+                    <strong>{{ $topRisk['title'] }}</strong>
+                    <p>{{ $topRisk['copy'] }}</p>
+                    <b>{{ $topRisk['value'] }}</b>
+                </article>
+            @endif
+
+            <article class="hero-mini-grid">
+                <div>
+                    <span>近 7 日营收</span>
+                    <strong>${{ number_format($summary['weekly_revenue'], 0) }}</strong>
+                </div>
+                <div>
+                    <span>待处理预警</span>
+                    <strong>{{ $summary['low_stock_count'] + $summary['queued_sync_runs'] }}</strong>
+                </div>
+                <div>
+                    <span>活跃渠道</span>
+                    <strong>{{ $summary['healthy_channels'] }}</strong>
+                </div>
+                <div>
+                    <span>活跃商品</span>
+                    <strong>{{ $summary['active_products'] }}</strong>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="admin-hero-grid admin-hero-grid-compact">
+        <article class="admin-callout">
+            <p class="page-kicker">Operating Focus</p>
+            <h2>先判断现在最该处理什么，再进入商品、渠道和订单的具体执行页面。</h2>
+            <p>
+                总览页优先承担分诊功能，把库存风险、同步阻塞、履约压力和增长机会压缩到同一首屏，减少进入系统后的搜索成本。
+            </p>
+        </article>
+
+        <article class="admin-stat-ribbon">
+            <div>
+                <span>近 7 日销售额</span>
+                <strong>${{ number_format($summary['weekly_revenue'], 0) }}</strong>
+            </div>
+            <div>
+                <span>待处理预警</span>
+                <strong>{{ $summary['low_stock_count'] + $summary['queued_sync_runs'] }}</strong>
+            </div>
+            <div>
+                <span>活跃渠道</span>
+                <strong>{{ $summary['healthy_channels'] }}</strong>
+            </div>
+        </article>
+    </section>
 
     <section class="metrics-grid">
         <article class="metric-card">
@@ -148,7 +230,7 @@
                 @foreach ($revenueTrend as $point)
                     <div class="bar-item">
                         <div class="bar-rail">
-                            <div class="bar-fill" style="height: {{ max(($point['revenue'] / $maxRevenue) * 100, 6) }}%"></div>
+                            <div class="bar-fill {{ $barClassMap[$loop->index] }}"></div>
                         </div>
                         <strong>${{ number_format($point['revenue'], 0) }}</strong>
                         <span>{{ $point['label'] }}</span>

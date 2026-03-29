@@ -4,22 +4,41 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>登录 | 商运后台</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @include('partials.style-entry')
 </head>
 <body class="login-body">
     <div class="login-shell">
         <section class="login-hero">
-            <p class="page-kicker">内部系统</p>
-            <h1>把商品、库存、渠道和订单放到同一个控制台里处理。</h1>
+            <span class="brand-badge">Shop Ops Hub</span>
+            <p class="page-kicker">Operations Console</p>
+            <h1>把商品、渠道、库存与订单，组织成一套真正可用的运营工作台。</h1>
             <p class="page-copy">
-                这个项目是中性的真实需求演示，不映射任何具体公司或业务主体。公开前台用于选品浏览与意向清单，
-                后台则通过会话与接口令牌保护，承接商品、渠道、订单和可视化分析。
+                这次重构不再把后台做成拥挤的信息墙，而是参考 Apple Developer 的视觉节奏，
+                用更清晰的区块、标题和层次承接商品管理、履约执行、渠道同步与经营分析。
             </p>
+
+            <div class="overview-strip overview-strip-3 compact-overview-strip">
+                <article>
+                    <span>统一视图</span>
+                    <strong>商品 + 渠道 + 订单</strong>
+                    <p>减少在多个工具间来回切换。</p>
+                </article>
+                <article>
+                    <span>决策重点</span>
+                    <strong>先风险 后增长</strong>
+                    <p>库存、同步、履约异常优先暴露。</p>
+                </article>
+                <article>
+                    <span>体验目标</span>
+                    <strong>移动与桌面</strong>
+                    <p>在保持信息密度的同时，保证阅读和扫描效率。</p>
+                </article>
+            </div>
 
             <div class="hero-matrix">
                 <article>
                     <strong>前台选品</strong>
-                    <p>公开站点可以浏览商品、筛选类目，并把候选商品加入意向清单。</p>
+                    <p>公开站点负责浏览、比较与意向汇总，不再只是登录前占位页。</p>
                 </article>
                 <article>
                     <strong>权限边界</strong>
@@ -27,7 +46,7 @@
                 </article>
                 <article>
                     <strong>经营可视化</strong>
-                    <p>控制台补充了经营驾驶舱，用图表看订单结构、财务走势和库存风险。</p>
+                    <p>控制台把订单结构、财务走势和库存风险集中到同一驾驶舱里。</p>
                 </article>
             </div>
 
@@ -40,7 +59,7 @@
         <section class="login-panel">
             <div class="login-head">
                 <div>
-                    <p class="page-kicker">账号登录</p>
+                    <p class="page-kicker">Sign In</p>
                     <h2>进入后台</h2>
                 </div>
             </div>
