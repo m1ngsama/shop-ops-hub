@@ -1,40 +1,43 @@
-@extends('layouts.app', ['title' => 'Channels | Shop Ops Hub'])
+@extends('layouts.app', ['title' => '渠道中心 | 商运后台'])
 
-@section('page_kicker', 'Connector desk')
-@section('page_title', 'Channels and sync control')
-@section('page_copy', 'Manage marketplace adapters, inspect recent runs, and trigger queued sync jobs from a protected workspace.')
+@section('page_kicker', '渠道模块')
+@section('page_title', '渠道中心')
+@section('page_copy', '以渠道为单位查看营收、订单、刊登、最近同步和排队任务状态。')
+@section('page_actions')
+    <a class="secondary-button" href="{{ route('admin.orders.index') }}">查看订单</a>
+@endsection
 
 @section('content')
     @php
-        $toneMap = [
-            'completed' => 'success',
-            'queued' => 'warning',
-            'running' => 'info',
-            'failed' => 'danger',
-        ];
+        $syncStatusMap = ['queued' => '排队中', 'running' => '执行中', 'completed' => '已完成', 'failed' => '失败'];
+        $triggerMap = ['manual' => '手动', 'api' => '接口', 'scheduler' => '调度'];
+        $toneMap = ['queued' => 'warning', 'running' => 'info', 'completed' => 'success', 'failed' => 'danger'];
     @endphp
 
     <section class="panel">
         <div class="panel-header">
             <div>
-                <p class="section-kicker">Integration access</p>
-                <h2>API routes are now protected</h2>
+                <p class="page-kicker">接口边界</p>
+                <h2>同步接口默认受保护</h2>
             </div>
-            <p class="section-copy">Use an authenticated admin session or pass a bearer token for machine-driven calls.</p>
         </div>
 
-        <div class="api-note-grid">
+        <div class="detail-grid">
             <article class="detail-card">
-                <span>Metrics endpoint</span>
+                <span>指标接口</span>
                 <strong>GET /api/dashboard/metrics</strong>
             </article>
             <article class="detail-card">
-                <span>Sync trigger</span>
+                <span>同步接口</span>
                 <strong>POST /api/channels/{channel}/sync</strong>
             </article>
             <article class="detail-card">
-                <span>Auth model</span>
-                <strong>Bearer token or admin session</strong>
+                <span>鉴权方式</span>
+                <strong>管理员会话或 Bearer Token</strong>
+            </article>
+            <article class="detail-card">
+                <span>执行方式</span>
+                <strong>队列入队，worker 异步消费</strong>
             </article>
         </div>
     </section>
@@ -46,62 +49,56 @@
                 $channelPerformance = $performance->get($channel->id);
             @endphp
 
-            <article class="channel-panel">
-                <div class="channel-panel-head">
+            <article class="channel-card">
+                <div class="channel-card-head">
                     <div>
-                        <p class="section-kicker">{{ $channel->marketplace }}</p>
+                        <p class="page-kicker">{{ $channel->marketplace }}</p>
                         <h2>{{ $channel->name }}</h2>
-                        <p class="section-copy">{{ $channel->region }} · {{ $channel->currency }} · fee {{ number_format((float) $channel->fee_percentage, 1) }}%</p>
+                        <p class="page-copy">{{ $channel->region }} · 费率 {{ number_format((float) $channel->fee_percentage, 1) }}% · {{ $channel->currency }}</p>
                     </div>
-                    <span class="status-pill" data-tone="{{ $channel->is_active ? 'success' : 'warning' }}">{{ $channel->is_active ? 'ACTIVE' : 'PAUSED' }}</span>
+                    <span class="status-chip tone-{{ $channel->is_active ? 'success' : 'warning' }}">{{ $channel->is_active ? '启用中' : '已停用' }}</span>
                 </div>
 
-                <div class="micro-stats">
-                    <div>
-                        <span>Revenue</span>
+                <div class="mini-metrics">
+                    <article>
+                        <span>销售额</span>
                         <strong>${{ number_format((float) ($channelPerformance?->revenue ?? 0), 2) }}</strong>
-                    </div>
-                    <div>
-                        <span>Orders</span>
+                    </article>
+                    <article>
+                        <span>订单</span>
                         <strong>{{ $channel->orders_count }}</strong>
-                    </div>
-                    <div>
-                        <span>Listings</span>
+                    </article>
+                    <article>
+                        <span>刊登</span>
                         <strong>{{ $channel->listings_count }}</strong>
-                    </div>
-                    <div>
-                        <span>Latest run</span>
-                        <strong>{{ $latestRun?->created_at?->diffForHumans() ?? 'No run yet' }}</strong>
-                    </div>
+                    </article>
+                    <article>
+                        <span>最近同步</span>
+                        <strong>{{ $latestRun?->created_at?->format('m-d H:i') ?? '暂无' }}</strong>
+                    </article>
                 </div>
 
-                <div class="channel-actions">
+                <div class="card-actions">
                     <form method="post" action="{{ route('admin.channels.sync', $channel) }}">
                         @csrf
-                        <button type="submit" class="primary-button">Queue sync</button>
+                        <button type="submit" class="primary-button">加入同步队列</button>
                     </form>
-                    <a class="ghost-button" href="{{ $channel->endpoint_url }}" target="_blank" rel="noreferrer">Endpoint</a>
                 </div>
 
-                <div class="stack-list compact">
+                <div class="row-list compact-list">
                     @forelse ($channel->syncRuns->take(3) as $run)
-                        <article class="list-row">
-                            <div>
-                                <strong>Run #{{ $run->id }}</strong>
-                                <span>
-                                    {{ strtoupper($run->trigger_type) }}
-                                    @if ($run->user)
-                                        · {{ $run->user->name }}
-                                    @endif
-                                </span>
+                        <article class="row-card">
+                            <div class="row-main">
+                                <strong>#{{ $run->id }}</strong>
+                                <p>{{ $triggerMap[$run->trigger_type] ?? $run->trigger_type }} · {{ $run->created_at?->format('m-d H:i') }} @if($run->user) · {{ $run->user->name }} @endif</p>
                             </div>
-                            <div class="list-row-meta">
-                                <span class="status-pill" data-tone="{{ $toneMap[$run->status] ?? 'neutral' }}">{{ strtoupper($run->status) }}</span>
-                                <span>{{ $run->processed_count }} updates</span>
+                            <div class="row-meta">
+                                <span class="status-chip tone-{{ $toneMap[$run->status] ?? 'neutral' }}">{{ $syncStatusMap[$run->status] ?? $run->status }}</span>
+                                <span>{{ $run->processed_count }} 条</span>
                             </div>
                         </article>
                     @empty
-                        <p class="empty-note">No sync history yet.</p>
+                        <p class="table-subtext">暂无同步记录。</p>
                     @endforelse
                 </div>
             </article>

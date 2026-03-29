@@ -19,7 +19,7 @@ class EnsureApiTokenIsValid
         $providedToken = trim((string) ($request->bearerToken() ?: $request->header('X-Shop-Ops-Token')));
 
         if ($configuredToken === '' || $providedToken === '' || ! hash_equals($configuredToken, $providedToken)) {
-            return new JsonResponse(['message' => 'Unauthenticated.'], 401);
+            return new JsonResponse(['message' => '未授权访问。'], 401);
         }
 
         return $next($request);

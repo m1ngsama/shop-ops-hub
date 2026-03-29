@@ -1,38 +1,40 @@
-@extends('layouts.app', ['title' => 'Catalog | Shop Ops Hub'])
+@extends('layouts.app', ['title' => '商品中心 | 商运后台'])
 
-@section('page_kicker', 'Catalog desk')
-@section('page_title', 'Product master')
-@section('page_copy', 'Search and filter SKU performance, supplier coverage, inventory availability, and margin profile.')
+@section('page_kicker', '商品模块')
+@section('page_title', '商品中心')
+@section('page_copy', '按 SKU、类目、状态和关键词筛选商品，查看库存、利润与供货关系。')
+@section('page_actions')
+    <a class="secondary-button" href="{{ route('admin.channels.index') }}">渠道同步</a>
+@endsection
 
 @section('content')
     <section class="panel">
         <div class="panel-header">
             <div>
-                <p class="section-kicker">Filter catalog</p>
-                <h2>Find the SKU that needs attention</h2>
+                <p class="page-kicker">筛选条件</p>
+                <h2>快速定位商品</h2>
             </div>
-            <p class="section-copy">Filter by SKU, name, status, or assortment category.</p>
         </div>
 
         <form method="get" class="filter-grid">
             <label class="field">
-                <span>Search</span>
-                <input type="search" name="search" value="{{ $filters['search'] }}" placeholder="SKU, name, marketplace focus">
+                <span>关键词</span>
+                <input type="search" name="search" value="{{ $filters['search'] }}" placeholder="SKU、商品名、运营策略">
             </label>
 
             <label class="field">
-                <span>Status</span>
+                <span>状态</span>
                 <select name="status">
-                    <option value="">All statuses</option>
-                    <option value="active" @selected($filters['status'] === 'active')>Active</option>
-                    <option value="paused" @selected($filters['status'] === 'paused')>Paused</option>
+                    <option value="">全部</option>
+                    <option value="active" @selected($filters['status'] === 'active')>上架中</option>
+                    <option value="paused" @selected($filters['status'] === 'paused')>已暂停</option>
                 </select>
             </label>
 
             <label class="field">
-                <span>Category</span>
+                <span>类目</span>
                 <select name="category">
-                    <option value="">All categories</option>
+                    <option value="">全部</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category }}" @selected($filters['category'] === $category)>{{ $category }}</option>
                     @endforeach
@@ -40,8 +42,8 @@
             </label>
 
             <div class="filter-actions">
-                <button type="submit" class="primary-button">Apply</button>
-                <a class="ghost-button" href="{{ route('admin.products.index') }}">Reset</a>
+                <button type="submit" class="primary-button">筛选</button>
+                <a class="secondary-button" href="{{ route('admin.products.index') }}">重置</a>
             </div>
         </form>
     </section>
@@ -49,10 +51,9 @@
     <section class="panel">
         <div class="panel-header">
             <div>
-                <p class="section-kicker">Catalog table</p>
-                <h2>{{ $products->total() }} SKUs matched</h2>
+                <p class="page-kicker">商品列表</p>
+                <h2>共 {{ $products->total() }} 个商品</h2>
             </div>
-            <p class="section-copy">Each row carries assortment, supply, inventory, and margin context.</p>
         </div>
 
         <div class="table-shell">
@@ -60,12 +61,13 @@
                 <thead>
                     <tr>
                         <th>SKU</th>
-                        <th>Product</th>
-                        <th>Supplier</th>
-                        <th>Inventory</th>
-                        <th>Focus</th>
-                        <th>Margin</th>
-                        <th>Status</th>
+                        <th>商品</th>
+                        <th>类目</th>
+                        <th>供应商</th>
+                        <th>可售库存</th>
+                        <th>目标售价</th>
+                        <th>毛利率</th>
+                        <th>状态</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,23 +76,21 @@
                             <td><a href="{{ route('admin.products.show', $product) }}">{{ $product->sku }}</a></td>
                             <td>
                                 <strong>{{ $product->name }}</strong>
-                                <div class="table-subcopy">{{ $product->category }}</div>
+                                <div class="table-subtext">{{ $product->marketplace_focus }}</div>
                             </td>
+                            <td>{{ $product->category }}</td>
                             <td>
-                                {{ $product->supplier?->name ?? 'Unassigned' }}
-                                <div class="table-subcopy">{{ $product->lead_time_days }} day lead time</div>
+                                {{ $product->supplier?->name ?? '未分配' }}
+                                <div class="table-subtext">交期 {{ $product->lead_time_days }} 天</div>
                             </td>
-                            <td>
-                                {{ $product->availableInventory() }}
-                                <div class="table-subcopy">Safety stock {{ $product->safety_stock }}</div>
-                            </td>
-                            <td>{{ $product->marketplace_focus }}</td>
+                            <td>{{ $product->availableInventory() }}</td>
+                            <td>${{ number_format((float) $product->target_price, 2) }}</td>
                             <td>{{ number_format($product->marginRate(), 1) }}%</td>
-                            <td><span class="status-pill" data-tone="{{ $product->status === 'active' ? 'success' : 'warning' }}">{{ strtoupper($product->status) }}</span></td>
+                            <td><span class="status-chip tone-{{ $product->status === 'active' ? 'success' : 'warning' }}">{{ $product->status === 'active' ? '上架中' : '已暂停' }}</span></td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7">No products match the current filters.</td>
+                            <td colspan="8">当前没有符合条件的商品。</td>
                         </tr>
                     @endforelse
                 </tbody>

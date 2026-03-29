@@ -32,6 +32,6 @@ class ChannelController extends Controller
 
         return redirect()
             ->route('admin.channels.index')
-            ->with('status', "{$channel->name} sync queued as run #{$run->id}.");
+            ->with('status', "{$channel->name} 已加入同步队列，任务编号 #{$run->id}。");
     }
 }

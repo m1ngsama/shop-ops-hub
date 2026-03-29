@@ -1,100 +1,64 @@
-# Shop Ops Hub
+# 商运后台
 
-Laravel application for cross-border commerce operations.
+一个基于 `Laravel 13 + MySQL + Redis + Docker` 的内部电商运营后台示例项目。
 
-## Why this product exists
+## 项目定位
 
-The target business profile is a cross-border B2C company selling large catalogs through Amazon and similar marketplaces. Public company copy on `yswg.com.cn` describes:
+本项目是一个中性的现实需求演示，不对应任何具体雇主、公司或业务主体。它模拟的是常见的多渠道零售运营场景：
 
-- Cross-border B2C operations.
-- Product lines spanning beauty, home, apparel, accessories, and jewelry.
-- Internal product development and sales management systems.
-- Marketplace-driven global sales, especially through Amazon.
+- 商品主数据管理
+- 多渠道刊登与同步
+- 库存批次与补货预警
+- 订单台账与毛利监控
+- 受保护的后台登录与接口令牌
 
-This repository turns that profile into a working demo product that matches the preferred engineering stack from the job description:
+## 功能结构
 
-- PHP 8.4
-- Laravel 13
-- Composer
-- MySQL-ready schema design
-- Redis-friendly caching
-- Marketplace adapter layer for Amazon/Walmart style API sync
-- Docker-based deployment
+- `/login` 登录页
+- `/admin` 运营总览
+- `/admin/products` 商品中心
+- `/admin/products/{id}` 商品详情
+- `/admin/channels` 渠道中心
+- `/admin/orders` 订单中心
 
-## What the app does
-
-Shop Ops Hub is an authenticated internal operations workspace for marketplace teams:
-
-- Public landing page and dedicated admin sign-in flow.
-- Protected `/admin` workspace for dashboard, catalog, channels, and orders.
-- Product master with supplier, target pricing, fulfillment fee, and safety stock.
-- Marketplace listings across Amazon US, Walmart US, and TikTok Shop US.
-- Inventory batches with replenishment alerts.
-- Order ledger with revenue, ad spend, channel fee, and gross profit.
-- Dashboard metrics cached through Laravel cache.
-- Token-protected API routes for metrics and channel sync.
-- Queued connector jobs processed by a worker service.
-
-## Main routes
-
-- `/` public landing page
-- `/login` admin sign-in
-- `/admin` private dashboard
-- `/admin/products` product master
-- `/admin/products/{id}` SKU detail
-- `/admin/channels` channel adapters and manual sync
-- `/admin/orders` order ledger
-
-## API routes
+## API
 
 - `GET /api/dashboard/metrics`
 - `POST /api/channels/{channel}/sync`
 
-Both API routes require either:
+这两个接口都需要以下任一凭证：
 
-- An authenticated admin session.
-- A bearer token matching `SHOP_OPS_API_TOKEN`.
+- 已登录的后台管理员会话
+- 与 `SHOP_OPS_API_TOKEN` 匹配的 Bearer Token
 
-## Local development
+## 技术栈
 
-The repository can be initialized and tested without a host PHP install by using Docker:
+- PHP 8.4
+- Laravel 13
+- Composer
+- MySQL
+- Redis
+- Docker Compose
+- Laravel Queue Worker
+
+## 本地验证
 
 ```bash
 docker run --rm -v "$PWD":/app -w /app composer:2 php artisan migrate:fresh --seed
 docker run --rm -v "$PWD":/app -w /app composer:2 php artisan test
 ```
 
-The checked-in `.env` uses SQLite for low-friction local verification. Production uses MySQL and Redis through `deploy/production.env.example`.
+## 部署说明
 
-Default seeded admin credentials are driven by config:
+生产环境包含 5 个服务：
 
-- `SHOP_OPS_ADMIN_EMAIL` default: `ops@m1ng.space`
-- `SHOP_OPS_ADMIN_PASSWORD` default: `shop-ops-demo`
-
-## Production architecture
-
-Production uses Docker Compose with five services:
-
-- `app`: PHP-FPM Laravel container
-- `worker`: Laravel queue worker for connector jobs
-- `web`: Nginx container serving the Laravel public directory
+- `app`: PHP-FPM
+- `worker`: 队列消费者
+- `web`: Nginx
 - `mysql`: MySQL 8.4
 - `redis`: Redis 7
 
-The compose stack listens only on `127.0.0.1:18081`. A host-level Nginx server block proxies `shop.m1ng.space` to that internal port.
-
-## Deployment files
-
-- `compose.yaml`
-- `Dockerfile`
-- `docker/entrypoint.sh`
-- `docker/nginx/default.conf`
-- `docker/php/conf.d/opcache.ini`
-- `deploy/production.env.example`
-- `deploy/shop.m1ng.space.conf`
-- `deploy/oss-bootstrap.sh`
-
-## Quick deploy outline
+快速部署：
 
 ```bash
 cp deploy/production.env.example .env.production
@@ -102,10 +66,10 @@ docker compose --env-file .env.production up -d --build
 docker compose --env-file .env.production exec app php artisan migrate --force --seed
 ```
 
-On the target host, install the provided host Nginx config and provision a certificate for `shop.m1ng.space`.
+建议的生产配置：
 
-Important production settings:
-
-- Set `APP_FORCE_HTTPS=true` behind the reverse proxy.
-- Set `QUEUE_CONNECTION=redis` so sync jobs run through the worker.
-- Set strong values for `SHOP_OPS_ADMIN_PASSWORD` and `SHOP_OPS_API_TOKEN`.
+- `APP_FORCE_HTTPS=true`
+- `QUEUE_CONNECTION=redis`
+- `APP_LOCALE=zh_CN`
+- 设置独立的 `SHOP_OPS_ADMIN_PASSWORD`
+- 设置独立的 `SHOP_OPS_API_TOKEN`

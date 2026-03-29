@@ -11,15 +11,13 @@ class DashboardTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_public_home_displays_the_private_workspace_positioning(): void
+    public function test_root_redirects_guest_user_to_login(): void
     {
         $this->seed(CommerceOpsSeeder::class);
 
         $response = $this->get('/');
 
-        $response->assertOk();
-        $response->assertSee('Run catalog, inventory, marketplace sync, and order margin');
-        $response->assertSee('Admin sign in');
+        $response->assertRedirect('/login');
     }
 
     public function test_admin_dashboard_requires_authentication(): void
@@ -38,8 +36,8 @@ class DashboardTest extends TestCase
         $response = $this->actingAs($user)->get('/admin');
 
         $response->assertOk();
-        $response->assertSee('Marketplace operations command');
-        $response->assertSee('Low-stock watchlist');
-        $response->assertSee('Amazon US');
+        $response->assertSee('运营总览');
+        $response->assertSee('低库存列表');
+        $response->assertSee('平台一-北美');
     }
 }

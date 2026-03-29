@@ -23,13 +23,17 @@ class AuthenticatedSessionController extends Controller
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
+        ], [
+            'email.required' => '请输入登录邮箱。',
+            'email.email' => '邮箱格式不正确。',
+            'password.required' => '请输入登录密码。',
         ]);
 
         $throttleKey = Str::transliterate(Str::lower($credentials['email']).'|'.$request->ip());
 
         if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
             throw ValidationException::withMessages([
-                'email' => 'Too many login attempts. Please try again in '.RateLimiter::availableIn($throttleKey).' seconds.',
+                'email' => '尝试次数过多，请在 '.RateLimiter::availableIn($throttleKey).' 秒后重试。',
             ]);
         }
 
@@ -37,7 +41,7 @@ class AuthenticatedSessionController extends Controller
             RateLimiter::hit($throttleKey, 60);
 
             throw ValidationException::withMessages([
-                'email' => 'The provided credentials do not match our records.',
+                'email' => '账号或密码不正确。',
             ]);
         }
 
@@ -48,7 +52,7 @@ class AuthenticatedSessionController extends Controller
             Auth::logout();
 
             throw ValidationException::withMessages([
-                'email' => 'This account does not have admin access.',
+                'email' => '当前账号没有后台访问权限。',
             ]);
         }
 

@@ -5,7 +5,7 @@ namespace App\Services\Channels;
 use App\Models\Channel;
 use App\Models\Product;
 
-class WalmartChannelDriver implements ChannelDriver
+class MarketplaceBetaDriver implements ChannelDriver
 {
     public function pull(Channel $channel): array
     {
@@ -18,29 +18,29 @@ class WalmartChannelDriver implements ChannelDriver
             $listings[] = [
                 'product_id' => $product->id,
                 'channel_id' => $channel->id,
-                'external_sku' => 'WMT-'.$product->sku,
+                'external_sku' => 'PB-'.$product->sku,
                 'status' => 'active',
-                'price' => round((float) $product->target_price - 1.35 + ($index * 0.8), 2),
-                'ad_daily_budget' => 9 + ($index * 2.5),
-                'review_count' => 42 + ($index * 18),
-                'conversion_rate' => 5.9 + ($index * 0.6),
-                'performance_score' => 79 + ($index * 2.2),
+                'price' => round((float) $product->target_price - 0.8 + ($index * 0.6), 2),
+                'ad_daily_budget' => 10 + ($index * 2.8),
+                'review_count' => 46 + ($index * 18),
+                'conversion_rate' => 5.8 + ($index * 0.5),
+                'performance_score' => 80 + ($index * 2.2),
                 'last_synced_at' => $timestamp,
                 'metadata' => [
-                    'program' => 'WFS',
-                    'badge' => 'margin-watch',
+                    'program' => '平台履约',
+                    'badge' => '利润观察',
                 ],
             ];
 
             $orders[] = [
                 'product_id' => $product->id,
                 'channel_id' => $channel->id,
-                'external_order_no' => sprintf('WMT-%s-%02d', $timestamp->format('YmdHis'), $index + 1),
+                'external_order_no' => sprintf('PB-%s-%02d', $timestamp->format('YmdHis'), $index + 1),
                 'status' => 'processing',
                 'quantity' => 1,
-                'sale_price' => round((float) $product->target_price - 0.75, 2),
-                'ad_spend' => 2.5 + ($index * 0.7),
-                'channel_fee' => 2.1 + ($index * 0.5),
+                'sale_price' => round((float) $product->target_price - 0.65, 2),
+                'ad_spend' => 2.8 + ($index * 0.7),
+                'channel_fee' => 2.3 + ($index * 0.4),
                 'ordered_at' => $timestamp->copy()->subHours(($index + 1) * 5),
             ];
         }
@@ -48,7 +48,7 @@ class WalmartChannelDriver implements ChannelDriver
         return [
             'listings' => $listings,
             'orders' => $orders,
-            'notes' => 'Simulated Walmart sync focused on pricing competitiveness and replenishment lead time.',
+            'notes' => '平台二已完成价格带与库存压力同步。',
         ];
     }
 }

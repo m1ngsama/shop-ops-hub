@@ -1,72 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Sign In | Shop Ops Hub</title>
+    <title>登录 | 商运后台</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body class="auth-body">
-    <div class="auth-shell">
-        <section class="auth-panel auth-copy-panel">
-            <p class="section-kicker">Private admin access</p>
-            <h1>Sign in to the operations workspace.</h1>
-            <p class="hero-copy">
-                This environment is for catalog operators, channel managers, and finance-aware marketplace teams.
-                Admin access is required for dashboard, catalog, channel sync, and order workflows.
+<body class="login-body">
+    <div class="login-shell">
+        <section class="login-hero">
+            <p class="page-kicker">内部系统</p>
+            <h1>把商品、库存、渠道和订单放到同一个控制台里处理。</h1>
+            <p class="page-copy">
+                这个项目是中性的真实需求演示，不映射任何具体雇主信息。界面语言默认中文，
+                入口仅保留登录页，后台功能通过会话与接口令牌保护。
             </p>
 
-            <div class="auth-points">
+            <div class="hero-matrix">
                 <article>
-                    <strong>Role-gated workspace</strong>
-                    <p>Only active admin users can enter the `/admin` surface.</p>
+                    <strong>任务优先</strong>
+                    <p>以筛选、表格、推荐动作和批量处理为中心，而不是宣传式落地页。</p>
                 </article>
                 <article>
-                    <strong>Queued channel jobs</strong>
-                    <p>Sync actions move through background workers instead of blocking browser requests.</p>
+                    <strong>权限边界</strong>
+                    <p>后台页面需登录访问，接口需管理员会话或 Bearer Token。</p>
                 </article>
                 <article>
-                    <strong>Integration-friendly API</strong>
-                    <p>Token authentication is available for machine-driven sync and metrics access.</p>
+                    <strong>异步执行</strong>
+                    <p>渠道同步进入队列，由 worker 消费，避免阻塞浏览器请求。</p>
                 </article>
             </div>
         </section>
 
-        <section class="auth-panel auth-form-panel">
-            <div class="panel-header">
+        <section class="login-panel">
+            <div class="login-head">
                 <div>
-                    <p class="section-kicker">Admin sign in</p>
-                    <h2>Enter your credentials</h2>
+                    <p class="page-kicker">账号登录</p>
+                    <h2>进入后台</h2>
                 </div>
-                <a class="ghost-button" href="{{ route('home') }}">Back</a>
             </div>
 
-            <form method="post" action="{{ route('login.store') }}" class="auth-form">
+            <form method="post" action="{{ route('login.store') }}" class="form-stack">
                 @csrf
 
                 <label class="field">
-                    <span>Email</span>
+                    <span>邮箱</span>
                     <input type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username">
                 </label>
 
                 <label class="field">
-                    <span>Password</span>
+                    <span>密码</span>
                     <input type="password" name="password" required autocomplete="current-password">
                 </label>
 
-                <label class="checkbox-row">
+                <label class="checkbox-line">
                     <input type="checkbox" name="remember" value="1" @checked(old('remember'))>
-                    <span>Keep this session active on this device</span>
+                    <span>记住当前设备</span>
                 </label>
 
                 @if ($errors->any())
-                    <div class="error-banner">
-                        <strong>Login failed.</strong>
-                        <span>{{ $errors->first() }}</span>
-                    </div>
+                    <div class="message-banner error-banner">{{ $errors->first() }}</div>
                 @endif
 
-                <button type="submit" class="primary-button full-width">Sign in to admin</button>
+                <button type="submit" class="primary-button full-width">登录后台</button>
             </form>
         </section>
     </div>

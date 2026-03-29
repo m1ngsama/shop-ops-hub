@@ -1,22 +1,20 @@
 @if ($paginator->hasPages())
-    <div class="pagination-shell">
-        <p>
-            Showing {{ $paginator->firstItem() }}-{{ $paginator->lastItem() }} of {{ $paginator->total() }} records
-        </p>
+    <div class="pagination-bar">
+        <p>显示 {{ $paginator->firstItem() }} - {{ $paginator->lastItem() }}，共 {{ $paginator->total() }} 条</p>
 
         <div class="pagination-actions">
             @if ($paginator->onFirstPage())
-                <span class="page-button is-disabled">Previous</span>
+                <span class="secondary-button is-disabled">上一页</span>
             @else
-                <a class="page-button" href="{{ $paginator->previousPageUrl() }}">Previous</a>
+                <a class="secondary-button" href="{{ $paginator->previousPageUrl() }}">上一页</a>
             @endif
 
-            <span class="page-current">Page {{ $paginator->currentPage() }} of {{ $paginator->lastPage() }}</span>
+            <span class="pagination-current">第 {{ $paginator->currentPage() }} / {{ $paginator->lastPage() }} 页</span>
 
             @if ($paginator->hasMorePages())
-                <a class="page-button" href="{{ $paginator->nextPageUrl() }}">Next</a>
+                <a class="secondary-button" href="{{ $paginator->nextPageUrl() }}">下一页</a>
             @else
-                <span class="page-button is-disabled">Next</span>
+                <span class="secondary-button is-disabled">下一页</span>
             @endif
         </div>
     </div>

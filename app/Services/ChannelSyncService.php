@@ -8,9 +8,10 @@ use App\Models\Listing;
 use App\Models\Order;
 use App\Models\SyncRun;
 use App\Models\User;
-use App\Services\Channels\AmazonChannelDriver;
 use App\Services\Channels\ChannelDriver;
-use App\Services\Channels\WalmartChannelDriver;
+use App\Services\Channels\DirectStoreDriver;
+use App\Services\Channels\MarketplaceAlphaDriver;
+use App\Services\Channels\MarketplaceBetaDriver;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -25,8 +26,8 @@ class ChannelSyncService
             'trigger_type' => $triggerType,
             'status' => 'queued',
             'notes' => $user
-                ? "Queued by {$user->name}."
-                : 'Queued by API token.',
+                ? "由 {$user->name} 发起排队。"
+                : '由接口令牌发起排队。',
         ]);
 
         RunChannelSync::dispatch($run->id);
@@ -55,7 +56,7 @@ class ChannelSyncService
 
         $run->update([
             'status' => 'running',
-            'notes' => $run->notes ?: 'Connector handshake started.',
+            'notes' => $run->notes ?: '同步链路已开始执行。',
         ]);
 
         return $this->process($run);
@@ -120,9 +121,9 @@ class ChannelSyncService
     private function resolveDriver(Channel $channel): ChannelDriver
     {
         return match ($channel->code) {
-            'amazon_us' => app(AmazonChannelDriver::class),
-            'walmart_us' => app(WalmartChannelDriver::class),
-            default => app(WalmartChannelDriver::class),
+            'marketplace_a' => app(MarketplaceAlphaDriver::class),
+            'marketplace_b' => app(MarketplaceBetaDriver::class),
+            default => app(DirectStoreDriver::class),
         };
     }
 }

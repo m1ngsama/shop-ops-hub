@@ -1,90 +1,89 @@
-@extends('layouts.app', ['title' => $product->name.' | Shop Ops Hub'])
+@extends('layouts.app', ['title' => $product->name.' | 商运后台'])
 
-@section('page_kicker', 'SKU detail')
+@section('page_kicker', '商品详情')
 @section('page_title', $product->name)
-@section('page_copy', 'Commercial, supply chain, listing, and order context for '.$product->sku.'.')
+@section('page_copy', $product->sku.' · 查看供货、库存批次、刊登状态与订单记录。')
+@section('page_actions')
+    <a class="secondary-button" href="{{ route('admin.products.index') }}">返回列表</a>
+@endsection
 
 @section('content')
-    <section class="hero-panel">
-        <div>
-            <p class="section-kicker">{{ $product->sku }} · {{ $product->category }}</p>
-            <h2>{{ $product->name }}</h2>
-            <p class="hero-copy">{{ $product->selling_points }}</p>
-        </div>
+    @php
+        $orderStatusMap = ['processing' => '处理中', 'shipped' => '已发货', 'delivered' => '已签收'];
+        $statusTone = ['processing' => 'warning', 'shipped' => 'info', 'delivered' => 'success'];
+    @endphp
 
-        <div class="hero-sidecar">
-            <div class="metric-badge">
-                <span>Target price</span>
-                <strong>${{ number_format((float) $product->target_price, 2) }}</strong>
-            </div>
-            <div class="metric-badge">
-                <span>Margin rate</span>
-                <strong>{{ number_format($product->marginRate(), 1) }}%</strong>
-            </div>
-        </div>
-    </section>
-
-    <section class="stats-grid">
-        <article class="stat-card">
-            <span>Supplier</span>
-            <strong>{{ $product->supplier?->name ?? 'Unassigned' }}</strong>
+    <section class="metrics-grid">
+        <article class="metric-card">
+            <span>目标售价</span>
+            <strong>${{ number_format((float) $product->target_price, 2) }}</strong>
         </article>
-        <article class="stat-card">
-            <span>Available inventory</span>
-            <strong>{{ $product->availableInventory() }}</strong>
-        </article>
-        <article class="stat-card">
-            <span>Safety stock</span>
-            <strong>{{ $product->safety_stock }}</strong>
-        </article>
-        <article class="stat-card">
-            <span>Lead time</span>
-            <strong>{{ $product->lead_time_days }} days</strong>
-        </article>
-        <article class="stat-card">
-            <span>Cost price</span>
+        <article class="metric-card">
+            <span>成本价</span>
             <strong>${{ number_format((float) $product->cost_price, 2) }}</strong>
         </article>
-        <article class="stat-card">
-            <span>Status</span>
-            <strong>{{ strtoupper($product->status) }}</strong>
+        <article class="metric-card">
+            <span>履约费用</span>
+            <strong>${{ number_format((float) $product->fulfillment_fee, 2) }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>毛利率</span>
+            <strong>{{ number_format($product->marginRate(), 1) }}%</strong>
+        </article>
+        <article class="metric-card">
+            <span>可售库存</span>
+            <strong>{{ $product->availableInventory() }}</strong>
+        </article>
+        <article class="metric-card">
+            <span>安全库存</span>
+            <strong>{{ $product->safety_stock }}</strong>
         </article>
     </section>
 
-    <section class="grid-two">
+    <section class="panel-grid panel-grid-2">
         <article class="panel">
             <div class="panel-header">
                 <div>
-                    <p class="section-kicker">Commercial detail</p>
-                    <h2>Go-to-market positioning</h2>
+                    <p class="page-kicker">基础信息</p>
+                    <h2>经营属性</h2>
                 </div>
             </div>
 
             <div class="detail-grid">
-                <div class="detail-card">
-                    <span>Marketplace focus</span>
+                <article class="detail-card">
+                    <span>类目</span>
+                    <strong>{{ $product->category }}</strong>
+                </article>
+                <article class="detail-card">
+                    <span>运营策略</span>
                     <strong>{{ $product->marketplace_focus }}</strong>
-                </div>
-                <div class="detail-card">
-                    <span>Fulfillment fee</span>
-                    <strong>${{ number_format((float) $product->fulfillment_fee, 2) }}</strong>
-                </div>
-                <div class="detail-card">
-                    <span>Supplier email</span>
-                    <strong>{{ $product->supplier?->contact_email ?? 'Not set' }}</strong>
-                </div>
-                <div class="detail-card">
-                    <span>Quality score</span>
+                </article>
+                <article class="detail-card">
+                    <span>供应商</span>
+                    <strong>{{ $product->supplier?->name ?? '未分配' }}</strong>
+                </article>
+                <article class="detail-card">
+                    <span>供货邮箱</span>
+                    <strong>{{ $product->supplier?->contact_email ?? '未设置' }}</strong>
+                </article>
+                <article class="detail-card">
+                    <span>交期</span>
+                    <strong>{{ $product->lead_time_days }} 天</strong>
+                </article>
+                <article class="detail-card">
+                    <span>质量评分</span>
                     <strong>{{ $product->supplier?->quality_score ?? 'N/A' }}</strong>
-                </div>
+                </article>
             </div>
+
+            <div class="note-block">{{ $product->selling_points }}</div>
         </article>
 
         <article class="panel">
             <div class="panel-header">
                 <div>
-                    <p class="section-kicker">Inventory batches</p>
-                    <h2>Warehouse distribution</h2>
+                    <p class="page-kicker">库存批次</p>
+                    <h2>仓内分布</h2>
                 </div>
             </div>
 
@@ -92,12 +91,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Warehouse</th>
-                            <th>Batch</th>
-                            <th>On hand</th>
-                            <th>Reserved</th>
-                            <th>Inbound</th>
-                            <th>ETA</th>
+                            <th>仓库</th>
+                            <th>批次</th>
+                            <th>在库</th>
+                            <th>占用</th>
+                            <th>在途</th>
+                            <th>预计到仓</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -108,7 +107,7 @@
                                 <td>{{ $batch->quantity_on_hand }}</td>
                                 <td>{{ $batch->quantity_reserved }}</td>
                                 <td>{{ $batch->quantity_inbound }}</td>
-                                <td>{{ $batch->inbound_eta?->format('Y-m-d') ?? 'N/A' }}</td>
+                                <td>{{ $batch->inbound_eta?->format('Y-m-d') ?? '暂无' }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -120,8 +119,8 @@
     <section class="panel">
         <div class="panel-header">
             <div>
-                <p class="section-kicker">Marketplace listings</p>
-                <h2>Active channel footprint</h2>
+                <p class="page-kicker">渠道刊登</p>
+                <h2>当前刊登状态</h2>
             </div>
         </div>
 
@@ -129,13 +128,13 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Channel</th>
-                        <th>External SKU</th>
-                        <th>Status</th>
-                        <th>Price</th>
-                        <th>Reviews</th>
-                        <th>Conversion</th>
-                        <th>Performance</th>
+                        <th>渠道</th>
+                        <th>外部 SKU</th>
+                        <th>状态</th>
+                        <th>价格</th>
+                        <th>评论数</th>
+                        <th>转化率</th>
+                        <th>表现分</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -143,7 +142,7 @@
                         <tr>
                             <td>{{ $listing->channel->name }}</td>
                             <td>{{ $listing->external_sku }}</td>
-                            <td><span class="status-pill" data-tone="{{ $listing->status === 'active' ? 'success' : 'warning' }}">{{ strtoupper($listing->status) }}</span></td>
+                            <td><span class="status-chip tone-{{ $listing->status === 'active' ? 'success' : 'warning' }}">{{ $listing->status === 'active' ? '上架中' : '已暂停' }}</span></td>
                             <td>${{ number_format((float) $listing->price, 2) }}</td>
                             <td>{{ $listing->review_count }}</td>
                             <td>{{ number_format((float) $listing->conversion_rate, 1) }}%</td>
@@ -158,8 +157,8 @@
     <section class="panel">
         <div class="panel-header">
             <div>
-                <p class="section-kicker">Order history</p>
-                <h2>Recent demand on this SKU</h2>
+                <p class="page-kicker">订单记录</p>
+                <h2>最近成交</h2>
             </div>
         </div>
 
@@ -167,13 +166,13 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Order</th>
-                        <th>Channel</th>
-                        <th>Status</th>
-                        <th>Quantity</th>
-                        <th>Revenue</th>
-                        <th>Gross profit</th>
-                        <th>Ordered at</th>
+                        <th>订单号</th>
+                        <th>渠道</th>
+                        <th>状态</th>
+                        <th>数量</th>
+                        <th>销售额</th>
+                        <th>毛利</th>
+                        <th>下单时间</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -181,15 +180,15 @@
                         <tr>
                             <td>{{ $order->external_order_no }}</td>
                             <td>{{ $order->channel->name }}</td>
-                            <td><span class="status-pill" data-tone="{{ in_array($order->status, ['delivered'], true) ? 'success' : (in_array($order->status, ['processing'], true) ? 'warning' : 'info') }}">{{ strtoupper($order->status) }}</span></td>
+                            <td><span class="status-chip tone-{{ $statusTone[$order->status] ?? 'neutral' }}">{{ $orderStatusMap[$order->status] ?? $order->status }}</span></td>
                             <td>{{ $order->quantity }}</td>
                             <td>${{ number_format($order->revenue(), 2) }}</td>
                             <td>${{ number_format($order->grossProfit(), 2) }}</td>
-                            <td>{{ $order->ordered_at?->format('Y-m-d H:i') }}</td>
+                            <td>{{ $order->ordered_at?->format('m-d H:i') }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7">No orders have been synced for this SKU yet.</td>
+                            <td colspan="7">当前没有订单记录。</td>
                         </tr>
                     @endforelse
                 </tbody>

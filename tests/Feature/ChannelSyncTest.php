@@ -17,7 +17,7 @@ class ChannelSyncTest extends TestCase
     {
         $this->seed(CommerceOpsSeeder::class);
 
-        $channel = Channel::query()->where('code', 'amazon_us')->firstOrFail();
+        $channel = Channel::query()->where('code', 'marketplace_a')->firstOrFail();
 
         $response = $this->postJson("/api/channels/{$channel->id}/sync");
 
@@ -31,7 +31,7 @@ class ChannelSyncTest extends TestCase
 
         $this->seed(CommerceOpsSeeder::class);
 
-        $channel = Channel::query()->where('code', 'amazon_us')->firstOrFail();
+        $channel = Channel::query()->where('code', 'marketplace_a')->firstOrFail();
 
         $response = $this
             ->withHeader('Authorization', 'Bearer test-token')
