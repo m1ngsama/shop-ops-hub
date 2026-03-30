@@ -5,7 +5,7 @@
         <div>
             <p class="hero-kicker">Bag</p>
             <h1>你的购物袋。</h1>
-            <p class="hero-text">在这里调整数量，准备继续结算。</p>
+            <p class="hero-text">确认商品、数量和金额，然后继续购物。</p>
         </div>
 
         <div class="catalog-summary">
@@ -91,7 +91,7 @@
                     <div class="section-heading compact-heading">
                         <div>
                             <p class="hero-kicker">Summary</p>
-                            <h2>订单摘要</h2>
+                            <h2>摘要</h2>
                         </div>
                     </div>
 
@@ -119,6 +119,8 @@
                         @method('delete')
                         <button type="submit" class="secondary-button full-width">清空购物袋</button>
                     </form>
+
+                    <a class="primary-button full-width" href="{{ route('storefront.catalog') }}">继续选购</a>
                 </article>
             </aside>
         </section>

@@ -4,7 +4,6 @@
     @php
         $averageScore = round((float) ($product->listings->avg('performance_score') ?? 0), 1);
         $reviewCount = (int) $product->listings->sum('review_count');
-        $channelCoverage = $product->listings->pluck('channel.name')->implode(' / ');
     @endphp
 
     <section class="detail-hero">
@@ -66,83 +65,17 @@
         </article>
     </section>
 
-    <section class="detail-layout">
-        <article class="storefront-panel">
-            <div class="section-heading compact-heading">
-                <div>
-                    <p class="hero-kicker">Details</p>
-                    <h2>商品信息</h2>
-                </div>
-            </div>
-
-            <div class="summary-stack">
-                <article class="summary-card">
-                    <span>品牌</span>
-                    <strong>{{ $product->supplier?->name ?? '精选供应商' }}</strong>
-                </article>
-                <article class="summary-card">
-                    <span>发货时间</span>
-                    <strong>{{ $product->lead_time_days }} 天</strong>
-                </article>
-                <article class="summary-card">
-                    <span>评分</span>
-                    <strong>{{ number_format($averageScore, 1) }}</strong>
-                </article>
-                <article class="summary-card">
-                    <span>评价数</span>
-                    <strong>{{ $reviewCount }}</strong>
-                </article>
-            </div>
-
-            <div class="table-shell">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>仓库</th>
-                            <th>现货</th>
-                            <th>锁定</th>
-                            <th>补货中</th>
-                            <th>到货时间</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($product->inventoryBatches as $batch)
-                            <tr>
-                                <td>{{ $batch->warehouse_code }}</td>
-                                <td>{{ $batch->quantity_on_hand }}</td>
-                                <td>{{ $batch->quantity_reserved }}</td>
-                                <td>{{ $batch->quantity_inbound }}</td>
-                                <td>{{ $batch->inbound_eta?->format('Y-m-d') ?? '暂无' }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+    <section class="storefront-editorial-split storefront-editorial-split-compact">
+        <article class="editorial-card editorial-card-strong">
+            <p class="hero-kicker">About this item</p>
+            <h2>{{ $product->marketplace_focus }}</h2>
+            <p>{{ $product->selling_points }}</p>
         </article>
 
-        <article class="storefront-panel">
-            <div class="section-heading compact-heading">
-                <div>
-                    <p class="hero-kicker">Reviews</p>
-                    <h2>购买参考</h2>
-                </div>
-            </div>
-
-            <div class="channel-strip channel-strip-compact">
-                @foreach ($product->listings as $listing)
-                    <article class="channel-tile">
-                        <div>
-                            <span class="surface-tag">{{ $listing->channel->marketplace }}</span>
-                            <strong>{{ $listing->channel->name }}</strong>
-                        </div>
-                        <p>{{ $listing->review_count }} 条评价</p>
-                        <div class="pill-row">
-                            <span class="metric-pill">售价 ${{ number_format((float) $listing->price, 2) }}</span>
-                            <span class="metric-pill">评分 {{ number_format((float) $listing->performance_score, 1) }}</span>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
+        <article class="editorial-card">
+            <span class="surface-tag">Why you'll love it</span>
+            <strong>{{ $product->availableInventory() > $product->safety_stock ? '现货充足，适合立即下单。' : '热门商品，建议尽快加入购物袋。' }}</strong>
+            <p>{{ $reviewCount }} 条真实反馈，综合评分 {{ number_format($averageScore, 1) }}。</p>
         </article>
     </section>
 
