@@ -82,7 +82,7 @@
                         <span class="surface-tag">{{ $collection['tag'] }}</span>
                         <strong>{{ $collection['title'] }}</strong>
                     </div>
-                    <p>{{ str_replace(['内容投放', '复购路线', '居家生活'], ['轻松搭配', '日常回购', '居家灵感'], $collection['copy']) }}</p>
+                    <p>{{ $collection['copy'] }}</p>
 
                     <div class="pill-row">
                         <span class="metric-pill">组合价 ${{ number_format((float) $collection['estimated_ticket'], 2) }}</span>

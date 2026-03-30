@@ -18,9 +18,9 @@ class StorefrontTest extends TestCase
         $response = $this->get('/catalog');
 
         $response->assertOk();
-        $response->assertSee('商品目录');
+        $response->assertSee('找到适合你的商品');
         $response->assertSee('修护发膜');
-        $response->assertSee('过滤商品');
+        $response->assertSee('筛选');
     }
 
     public function test_guest_can_add_product_to_selection_plan(): void
@@ -40,7 +40,7 @@ class StorefrontTest extends TestCase
 
         $this->get('/selection-plan')
             ->assertOk()
-            ->assertSee('意向清单')
+            ->assertSee('购物袋')
             ->assertSee($product->name);
     }
 
@@ -51,9 +51,9 @@ class StorefrontTest extends TestCase
         $response = $this->get('/');
 
         $response->assertOk();
-        $response->assertSee('场景组合');
-        $response->assertSee('商品比较');
-        $response->assertSee('轻健身与出行组合');
-        $response->assertSee('买家反馈摘要');
+        $response->assertSee('本周推荐');
+        $response->assertSee('精选组合');
+        $response->assertSee('轻运动与出行组合');
+        $response->assertSee('按类目浏览');
     }
 }

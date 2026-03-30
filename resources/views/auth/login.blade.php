@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>登录 | 商运后台</title>
+    <title>登录 | Operations Console</title>
     @include('partials.style-entry')
 </head>
 <body class="login-body">
@@ -11,11 +11,8 @@
         <section class="login-hero">
             <span class="brand-badge">Shop Ops Hub</span>
             <p class="page-kicker">Operations Console</p>
-            <h1>把商品、渠道、库存与订单，组织成一套真正可用的运营工作台。</h1>
-            <p class="page-copy">
-                这次重构不再把后台做成拥挤的信息墙，而是参考 Apple Developer 的视觉节奏，
-                用更清晰的区块、标题和层次承接商品管理、履约执行、渠道同步与经营分析。
-            </p>
+            <h1>更清晰的后台，更直接的决策界面。</h1>
+            <p class="page-copy">统一查看商品、订单、渠道与数据信号。</p>
 
             <div class="overview-strip overview-strip-3 compact-overview-strip">
                 <article>
@@ -37,16 +34,16 @@
 
             <div class="hero-matrix">
                 <article>
-                    <strong>前台选品</strong>
-                    <p>公开站点负责浏览、比较与意向汇总，不再只是登录前占位页。</p>
+                    <strong>前台商店</strong>
+                    <p>公开站点负责浏览、购买和购物袋体验。</p>
                 </article>
                 <article>
                     <strong>权限边界</strong>
                     <p>后台页面需登录访问，接口需管理员会话或 Bearer Token。</p>
                 </article>
                 <article>
-                    <strong>经营可视化</strong>
-                    <p>控制台把订单结构、财务走势和库存风险集中到同一驾驶舱里。</p>
+                    <strong>数据可视化</strong>
+                    <p>核心趋势、结构分布和风险信号集中展示。</p>
                 </article>
             </div>
 
@@ -60,7 +57,7 @@
             <div class="login-head">
                 <div>
                     <p class="page-kicker">Sign In</p>
-                    <h2>进入后台</h2>
+                    <h2>登录后台</h2>
                 </div>
             </div>
 
@@ -86,7 +83,7 @@
                     <div class="message-banner error-banner">{{ $errors->first() }}</div>
                 @endif
 
-                <button type="submit" class="primary-button full-width">登录后台</button>
+                <button type="submit" class="primary-button full-width">登录</button>
             </form>
         </section>
     </div>

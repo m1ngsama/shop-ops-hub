@@ -188,21 +188,21 @@ class StorefrontController extends Controller
     {
         return collect([
             [
-                'tag' => '内容投放',
-                'title' => '轻健身与出行组合',
-                'copy' => '适合用短视频与内容种草带动转化，兼顾客单价和搭配购买。',
+                'tag' => 'Active edit',
+                'title' => '轻运动与出行组合',
+                'copy' => '适合日常运动、通勤与短途出行，轻松完成一套搭配。',
                 'skus' => ['WEAR-3104', 'TRIP-4107'],
             ],
             [
-                'tag' => '居家生活',
+                'tag' => 'Home edit',
                 'title' => '居家香氛与桌面收纳',
-                'copy' => '偏礼品场景，适合节庆、换季和组合陈列。',
+                'copy' => '为桌面和生活空间带来更整洁、更舒服的日常体验。',
                 'skus' => ['HOME-2201', 'DESK-5202'],
             ],
             [
-                'tag' => '复购路线',
-                'title' => '个护回购与加购补单',
-                'copy' => '以稳定复购和老客补单为目标，适合建立连续经营节奏。',
+                'tag' => 'Daily care',
+                'title' => '个护与收纳日常组合',
+                'copy' => '把日常护理和收纳整理放进同一份简单、顺手的购物清单。',
                 'skus' => ['CARE-1001', 'DESK-5202'],
             ],
         ])->map(function (array $collection) use ($productsBySku): ?array {
@@ -243,9 +243,9 @@ class StorefrontController extends Controller
                     'conversion' => $conversion,
                     'review_count' => $reviewCount,
                     'quote' => match ($product->category) {
-                        '个护' => '复购反馈稳定，适合做持续经营，不用靠极端促销拉动。',
-                        '服饰' => '展示效果和内容带货更重要，颜色与尺码组合会直接影响转化。',
-                        default => '组合购买表现更好，详情页里把使用场景说清楚后更容易成交。',
+                        '个护' => '日常使用频率高，适合加入长期回购清单。',
+                        '服饰' => '版型利落，适合和轻运动单品一起搭配购买。',
+                        default => '在礼品、居家和整理场景下都很容易搭配。',
                     },
                 ];
             });

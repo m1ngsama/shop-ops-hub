@@ -1,8 +1,8 @@
-@extends('layouts.app', ['title' => '运营总览 | 商运后台'])
+@extends('layouts.app', ['title' => '控制台总览 | 商运后台'])
 
 @section('page_kicker', '控制台首页')
-@section('page_title', '运营总览')
-@section('page_copy', '参考成熟电商控制台的信息结构，优先展示待处理事项、经营指标、渠道健康和最近执行记录。')
+@section('page_title', '控制台总览')
+@section('page_copy', '优先查看风险、订单、渠道状态与关键趋势。')
 @section('page_actions')
     <a class="secondary-button" href="{{ route('admin.insights') }}">查看可视化</a>
     <a class="secondary-button" href="{{ route('storefront.home') }}" target="_blank" rel="noreferrer">前台预览</a>
@@ -36,11 +36,9 @@
 
     <section class="hero-dashboard-panel">
         <div class="hero-dashboard-copy">
-            <p class="page-kicker">运营驾驶舱</p>
-            <h2>把风险、成交与执行状态压缩到一个决策首屏。</h2>
-            <p>
-                优先聚焦库存、同步和履约三类高频动作，让运营在进入后台的第一眼就知道哪里需要立刻介入。
-            </p>
+            <p class="page-kicker">Operations</p>
+            <h2>把风险、成交与状态压缩到一个决策首屏。</h2>
+            <p>进入后台后，先看最需要被处理的事。</p>
 
             <div class="hero-dashboard-actions">
                 <a class="primary-button" href="{{ route('admin.orders.index') }}">进入订单执行</a>
