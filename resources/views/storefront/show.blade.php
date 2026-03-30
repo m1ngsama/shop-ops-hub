@@ -3,7 +3,6 @@
 @section('content')
     @php
         $averageScore = round((float) ($product->listings->avg('performance_score') ?? 0), 1);
-        $averageConversion = round((float) ($product->listings->avg('conversion_rate') ?? 0), 1);
         $reviewCount = (int) $product->listings->sum('review_count');
         $channelCoverage = $product->listings->pluck('channel.name')->implode(' / ');
     @endphp
@@ -29,7 +28,7 @@
             <div class="rating-row detail-rating-row">
                 <span class="rating-stars">★★★★★</span>
                 <strong>{{ number_format($averageScore, 1) }}</strong>
-                <span>{{ $reviewCount }} 条反馈 · 平均转化 {{ number_format($averageConversion, 1) }}%</span>
+                <span>{{ $reviewCount }} 条反馈</span>
             </div>
 
             <form method="post" action="{{ route('storefront.plan.store', ['product' => $product]) }}" class="detail-form">
