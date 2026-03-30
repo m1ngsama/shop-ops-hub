@@ -7,14 +7,14 @@
     <div class="product-surface">
         <span class="surface-tag">{{ $product->category }}</span>
         <strong>{{ $product->sku }}</strong>
-        <p>{{ $product->marketplace_focus }}</p>
+        <p>{{ $product->lead_time_days }} 天交期</p>
     </div>
 
     <div class="product-card-body">
         <div class="product-card-head">
             <div>
                 <h3>{{ $product->name }}</h3>
-                <p>{{ $product->supplier?->name ?? '供应链待分配' }} · 交期 {{ $product->lead_time_days }} 天</p>
+                <p>{{ $product->supplier?->name ?? '供应链待分配' }}</p>
             </div>
             <strong class="price-mark">${{ number_format((float) $product->target_price, 2) }}</strong>
         </div>
@@ -25,13 +25,12 @@
             <span>{{ $reviewCount }} 条反馈</span>
         </div>
 
-        <p class="product-card-copy">{{ $product->selling_points }}</p>
+        <p class="product-card-copy">{{ $product->marketplace_focus }}</p>
 
         <div class="pill-row">
             <span class="metric-pill">毛利 {{ number_format($product->marginRate(), 1) }}%</span>
             <span class="metric-pill">可售 {{ $product->availableInventory() }}</span>
             <span class="metric-pill">评分 {{ number_format($averageScore, 1) }}</span>
-            <span class="metric-pill">评价 {{ $reviewCount }}</span>
         </div>
 
         <div class="card-actions">

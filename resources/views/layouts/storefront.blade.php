@@ -18,14 +18,14 @@
 @endphp
 <body class="storefront-body">
     <div class="storefront-utility">
-        <span>Merchandising Experience</span>
-        <span>用更克制的前端语言呈现商品、供给与意向协同</span>
+        <span>Shop Ops Hub</span>
+        <span>Curated merchandise</span>
     </div>
 
     <header class="storefront-header">
         <div class="storefront-brand">
             <a href="{{ route('storefront.home') }}">Shop Ops Hub</a>
-            <span>Apple Developer 风格启发下的商品陈列与协同前台</span>
+            <span>Curated merchandise</span>
         </div>
 
         <nav class="storefront-nav">
@@ -67,8 +67,8 @@
 
     <footer class="storefront-footer">
         <div>
-            <strong>Designed for browsing, comparison, and action.</strong>
-            <p>这是一个中性开源样板，用统一数据模型串起公开商品前台、意向清单与后台运营，不映射任何具体公司或业务主体。</p>
+            <strong>Shop Ops Hub</strong>
+            <p>Browse. Compare. Choose.</p>
         </div>
 
         <div class="footer-links">

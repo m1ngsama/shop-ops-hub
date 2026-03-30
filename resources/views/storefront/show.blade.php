@@ -12,7 +12,7 @@
         <div class="detail-surface">
             <span class="surface-tag">{{ $product->category }}</span>
             <strong>{{ $product->sku }}</strong>
-            <p>{{ $product->marketplace_focus }}</p>
+            <p>{{ $product->lead_time_days }} 天交期</p>
         </div>
 
         <div class="detail-copy">
@@ -45,19 +45,6 @@
         </div>
     </section>
 
-    <section class="storefront-editorial-split">
-        <article class="editorial-card editorial-card-strong">
-            <p class="hero-kicker">Why This Product</p>
-            <h2>详情页首先应该回答“为什么值得继续看”，而不是只重复参数。</h2>
-            <p>这款商品的阅读重点应放在售价、毛利、库存、口碑和渠道准备度之间的平衡，而不是单个指标本身。</p>
-        </article>
-        <article class="editorial-card">
-            <span class="surface-tag">当前建议</span>
-            <strong>{{ $product->lead_time_days <= 18 ? '适合快速试投与组合陈列' : '更适合计划性备货与节奏化投放' }}</strong>
-            <p>结合交期、库存与渠道覆盖，先在高匹配场景下做小批量验证，再决定是否扩量。</p>
-        </article>
-    </section>
-
     <section class="feature-grid feature-grid-4">
         <article class="feature-card compact-card">
             <span class="surface-tag">供给</span>
@@ -81,20 +68,12 @@
         </article>
     </section>
 
-    <section class="editorial-band">
-        <article class="editorial-card editorial-card-strong">
-            <p class="hero-kicker">经营判断</p>
-            <h2>{{ $product->marketplace_focus }}</h2>
-            <p>{{ $product->selling_points }}</p>
-        </article>
-    </section>
-
     <section class="detail-layout">
         <article class="storefront-panel">
             <div class="section-heading compact-heading">
                 <div>
-                    <p class="hero-kicker">供给能力</p>
-                    <h2>核心经营数据</h2>
+                    <p class="hero-kicker">Supply</p>
+                    <h2>核心数据</h2>
                 </div>
             </div>
 
@@ -114,22 +93,6 @@
                 <article class="summary-card">
                     <span>平均转化率</span>
                     <strong>{{ number_format($averageConversion, 1) }}%</strong>
-                </article>
-            </div>
-
-            <div class="voice-grid compact-voice-grid">
-                <article class="voice-card">
-                    <div class="voice-head">
-                        <div>
-                            <span class="surface-tag">成交信号</span>
-                            <strong>详情页需要先回答“为什么买”</strong>
-                        </div>
-                    </div>
-                    <p>当前这款商品在 {{ $product->listings->count() }} 个渠道刊登，累计 {{ $reviewCount }} 条反馈，说明它不是只有内部视角的数据点。</p>
-                    <div class="pill-row">
-                        <span class="metric-pill">转化 {{ number_format($averageConversion, 1) }}%</span>
-                        <span class="metric-pill">评分 {{ number_format($averageScore, 1) }}</span>
-                    </div>
                 </article>
             </div>
 
@@ -162,8 +125,8 @@
         <article class="storefront-panel">
             <div class="section-heading compact-heading">
                 <div>
-                    <p class="hero-kicker">渠道准备度</p>
-                    <h2>当前刊登情况</h2>
+                    <p class="hero-kicker">Channels</p>
+                    <h2>刊登情况</h2>
                 </div>
             </div>
 
@@ -189,26 +152,8 @@
     <section class="storefront-section">
         <div class="section-heading">
             <div>
-                <p class="hero-kicker">购买判断</p>
-                <h2>常见问题</h2>
-            </div>
-        </div>
-
-        <div class="faq-grid">
-            @foreach ($faqItems as $item)
-                <article class="faq-card">
-                    <strong>{{ $item['question'] }}</strong>
-                    <p>{{ $item['answer'] }}</p>
-                </article>
-            @endforeach
-        </div>
-    </section>
-
-    <section class="storefront-section">
-        <div class="section-heading">
-            <div>
-                <p class="hero-kicker">组合推荐</p>
-                <h2>适合一起陈列的商品</h2>
+                <p class="hero-kicker">Styled With</p>
+                <h2>搭配推荐</h2>
             </div>
         </div>
 
@@ -222,8 +167,8 @@
     <section class="storefront-section">
         <div class="section-heading">
             <div>
-                <p class="hero-kicker">相关商品</p>
-                <h2>同类目推荐</h2>
+                <p class="hero-kicker">More</p>
+                <h2>更多同类商品</h2>
             </div>
         </div>
 
