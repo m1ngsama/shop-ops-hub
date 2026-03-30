@@ -1,6 +1,7 @@
 @php
     $reviewCount = (int) $product->listings->sum('review_count');
     $averageScore = round((float) ($product->listings->avg('performance_score') ?? 0), 1);
+    $starRating = $averageScore > 0 ? round($averageScore / 20, 1) : 0.0;
 @endphp
 
 <article class="product-card">
@@ -20,8 +21,8 @@
         </div>
 
         <div class="rating-row">
-            <span class="rating-stars">★★★★★</span>
-            <strong>{{ number_format($averageScore, 1) }}</strong>
+            <span class="rating-stars">★</span>
+            <strong>{{ number_format($starRating, 1) }}</strong>
             <span>{{ $reviewCount }} 条反馈</span>
         </div>
 
@@ -29,7 +30,7 @@
 
         <div class="pill-row">
             <span class="metric-pill">现货 {{ $product->availableInventory() }}</span>
-            <span class="metric-pill">评分 {{ number_format($averageScore, 1) }}</span>
+            <span class="metric-pill">评分 {{ number_format($starRating, 1) }}/5</span>
         </div>
 
         <div class="card-actions">

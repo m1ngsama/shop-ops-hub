@@ -1,9 +1,13 @@
-@extends('layouts.storefront', ['title' => $product->name.' | Shop Ops Hub'])
+@extends('layouts.storefront', [
+    'title' => $product->name.' | Shop Ops Hub',
+    'metaDescription' => $product->selling_points.' — '.$product->category.'，预计 '.$product->lead_time_days.' 天发货。',
+])
 
 @section('content')
     @php
         $averageScore = round((float) ($product->listings->avg('performance_score') ?? 0), 1);
         $reviewCount = (int) $product->listings->sum('review_count');
+        $starRating = $averageScore > 0 ? round($averageScore / 20, 1) : 0.0;
     @endphp
 
     <section class="detail-hero">
@@ -25,8 +29,8 @@
             </div>
 
             <div class="rating-row detail-rating-row">
-                <span class="rating-stars">★★★★★</span>
-                <strong>{{ number_format($averageScore, 1) }}</strong>
+                <span class="rating-stars">★</span>
+                <strong>{{ number_format($starRating, 1) }}</strong>
                 <span>{{ $reviewCount }} 条反馈</span>
             </div>
 
@@ -56,7 +60,7 @@
         <article class="feature-card compact-card">
             <span class="surface-tag">Reviews</span>
             <h2>用户评价</h2>
-            <p>{{ $reviewCount }} 条评价 · {{ number_format($averageScore, 1) }} 分</p>
+            <p>{{ $reviewCount }} 条评价 · {{ number_format($starRating, 1) }}/5</p>
         </article>
         <article class="feature-card compact-card">
             <span class="surface-tag">Availability</span>
@@ -75,7 +79,7 @@
         <article class="editorial-card">
             <span class="surface-tag">Why you'll love it</span>
             <strong>{{ $product->availableInventory() > $product->safety_stock ? '现货充足，适合立即下单。' : '热门商品，建议尽快加入购物袋。' }}</strong>
-            <p>{{ $reviewCount }} 条真实反馈，综合评分 {{ number_format($averageScore, 1) }}。</p>
+            <p>{{ $reviewCount }} 条真实反馈，综合评分 {{ number_format($starRating, 1) }}/5。</p>
         </article>
     </section>
 
@@ -113,4 +117,24 @@
             @endforelse
         </div>
     </section>
+
+    @if ($faqItems->isNotEmpty())
+    <section class="storefront-section">
+        <div class="section-heading">
+            <div>
+                <p class="hero-kicker">FAQ</p>
+                <h2>常见问题</h2>
+            </div>
+        </div>
+
+        <div class="faq-grid">
+            @foreach ($faqItems as $faq)
+                <article class="faq-card">
+                    <strong>{{ $faq['question'] }}</strong>
+                    <p>{{ $faq['answer'] }}</p>
+                </article>
+            @endforeach
+        </div>
+    </section>
+    @endif
 @endsection

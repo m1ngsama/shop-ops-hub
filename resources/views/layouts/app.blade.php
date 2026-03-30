@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="{{ $metaDescription ?? '商运后台 — 商品、渠道、订单与经营数据的统一管理平台。' }}">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
     <title>{{ $title ?? '商运后台' }}</title>
     @include('partials.style-entry')
 </head>

@@ -9,6 +9,8 @@
 
             <div class="pill-row hero-pills">
                 <span class="metric-pill">在售 {{ $heroSummary['active_products'] }}</span>
+                <span class="metric-pill">现货 {{ $heroSummary['available_inventory'] }} 件</span>
+                <span class="metric-pill">毛利率 {{ $heroSummary['average_margin'] }}%</span>
                 <span class="metric-pill">最快 {{ $heroSummary['fastest_lead_time'] }} 天发货</span>
             </div>
 
@@ -102,5 +104,51 @@
             @endforeach
         </div>
     </section>
+
+    <section class="storefront-section">
+        <div class="section-heading">
+            <div>
+                <p class="hero-kicker">Why us</p>
+                <h2>为什么选择我们</h2>
+            </div>
+        </div>
+
+        <div class="service-band">
+            @foreach ($servicePromises as $promise)
+                <article class="service-band-card">
+                    <strong>{{ $promise['title'] }}</strong>
+                    <p>{{ $promise['copy'] }}</p>
+                    <b>{{ $promise['value'] }}</b>
+                </article>
+            @endforeach
+        </div>
+    </section>
+
+    @if ($buyerVoices->isNotEmpty())
+    <section class="storefront-section">
+        <div class="section-heading">
+            <div>
+                <p class="hero-kicker">Buyer voices</p>
+                <h2>用户反馈</h2>
+            </div>
+        </div>
+
+        <div class="voice-grid">
+            @foreach ($buyerVoices as $voice)
+                <article class="voice-card">
+                    <div class="voice-head">
+                        <strong>{{ $voice['product']->name }}</strong>
+                        <span class="voice-score">{{ number_format($voice['score'] / 20, 1) }} ★</span>
+                    </div>
+                    <p>{{ $voice['quote'] }}</p>
+                    <div class="pill-row">
+                        <span class="metric-pill">{{ $voice['review_count'] }} 条评价</span>
+                        <span class="metric-pill">转化率 {{ $voice['conversion'] }}%</span>
+                    </div>
+                </article>
+            @endforeach
+        </div>
+    </section>
+    @endif
 
 @endsection

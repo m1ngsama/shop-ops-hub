@@ -122,6 +122,17 @@
 
                     <a class="primary-button full-width" href="{{ route('storefront.catalog') }}">继续选购</a>
                 </article>
+
+                <article class="storefront-panel">
+                    <div class="section-heading compact-heading">
+                        <div>
+                            <p class="hero-kicker">Next steps</p>
+                            <h2>如何提交意向单</h2>
+                        </div>
+                    </div>
+                    <p style="font-size:0.9rem;line-height:1.7;color:#55616d;margin-bottom:14px;">确认商品无误后，截图或导出本页面，通过联系页面发送给我们，我们会在 24 小时内回复并确认采购细节。</p>
+                    <p style="font-size:0.85rem;color:#8a95a0;line-height:1.6;">部分商品存在搭配优惠，建议完成全部选品后统一提交，以获得更优的采购条件。</p>
+                </article>
             </aside>
         </section>
     @endif

@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="{{ $metaDescription ?? '精选日用商品，简洁购物体验。发现优质商品，快速找到适合你的选择。' }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}">
     <title>{{ $title ?? 'Shop Ops Hub' }}</title>
     @include('partials.style-entry')
 </head>
