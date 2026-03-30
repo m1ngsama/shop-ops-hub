@@ -16,7 +16,7 @@
         </div>
 
         <div class="detail-copy">
-            <p class="hero-kicker">商品详情</p>
+            <p class="hero-kicker">Product</p>
             <h1>{{ $product->name }}</h1>
             <p class="hero-text">{{ $product->selling_points }}</p>
 
@@ -47,24 +47,24 @@
 
     <section class="feature-grid feature-grid-4">
         <article class="feature-card compact-card">
-            <span class="surface-tag">供给</span>
-            <h2>供应质量</h2>
+            <span class="surface-tag">Supplier</span>
+            <h2>供应商</h2>
             <p>{{ $product->supplier?->quality_score ?? '--' }} 分 · {{ $product->supplier?->name ?? '待分配' }}</p>
         </article>
         <article class="feature-card compact-card">
-            <span class="surface-tag">渠道</span>
-            <h2>刊登覆盖</h2>
+            <span class="surface-tag">Channels</span>
+            <h2>渠道</h2>
             <p>{{ $product->listings->count() }} 个渠道 · {{ $channelCoverage }}</p>
         </article>
         <article class="feature-card compact-card">
-            <span class="surface-tag">口碑</span>
-            <h2>评价规模</h2>
+            <span class="surface-tag">Reviews</span>
+            <h2>口碑</h2>
             <p>{{ $reviewCount }} 条评价 · 表现分 {{ number_format($averageScore, 1) }}</p>
         </article>
         <article class="feature-card compact-card">
-            <span class="surface-tag">执行</span>
-            <h2>采购判断</h2>
-            <p>{{ $product->availableInventory() > $product->safety_stock ? '库存安全，可加快试单。' : '库存偏紧，应先评估补货。' }}</p>
+            <span class="surface-tag">Stock</span>
+            <h2>库存</h2>
+            <p>{{ $product->availableInventory() > $product->safety_stock ? '库存健康，可直接上架。' : '库存偏紧，建议谨慎放量。' }}</p>
         </article>
     </section>
 

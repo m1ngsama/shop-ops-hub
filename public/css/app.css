@@ -3315,6 +3315,19 @@ tbody tr:hover {
     gap: 28px;
 }
 
+.storefront-body .hero-stage {
+    align-content: start;
+}
+
+.storefront-body .hero-mini-grid {
+    grid-template-columns: 1fr;
+}
+
+.storefront-body .hero-mini-card {
+    min-height: 96px;
+    padding: 18px 20px;
+}
+
 .storefront-body .hero-copy h1 {
     max-width: 10ch;
 }
@@ -3329,6 +3342,17 @@ tbody tr:hover {
     min-height: 34px;
     padding: 0 12px;
     font-size: 0.88rem;
+}
+
+.storefront-body .catalog-summary article,
+.storefront-body .summary-card {
+    padding: 18px;
+}
+
+.storefront-body .catalog-summary strong,
+.storefront-body .summary-card strong {
+    font-size: 1.35rem;
+    letter-spacing: -0.03em;
 }
 
 .storefront-body .section-heading {
@@ -3393,6 +3417,10 @@ tbody tr:hover {
 
 .storefront-body .comparison-shell {
     border-radius: 22px;
+}
+
+.storefront-body .catalog-sidebar {
+    gap: 14px;
 }
 
 .storefront-body .catalog-hero,

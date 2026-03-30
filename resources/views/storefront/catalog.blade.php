@@ -10,15 +10,15 @@
 
         <div class="catalog-summary">
             <article>
-                <span>匹配商品</span>
+                <span>商品</span>
                 <strong>{{ $products->total() }}</strong>
             </article>
             <article>
-                <span>已选条目</span>
+                <span>已选</span>
                 <strong>{{ $planSummary['line_count'] }}</strong>
             </article>
             <article>
-                <span>预估金额</span>
+                <span>金额</span>
                 <strong>${{ number_format((float) $planSummary['estimated_value'], 2) }}</strong>
             </article>
         </div>
@@ -83,8 +83,8 @@
             <article class="storefront-panel">
                 <div class="section-heading compact-heading">
                     <div>
-                        <p class="hero-kicker">意向清单</p>
-                        <h2>当前摘要</h2>
+                        <p class="hero-kicker">Selection</p>
+                        <h2>当前选择</h2>
                     </div>
                 </div>
 
@@ -107,15 +107,15 @@
                     </article>
                 </div>
 
-                <a class="secondary-button full-width" href="{{ route('storefront.plan.index') }}">打开意向清单</a>
+                <a class="secondary-button full-width" href="{{ route('storefront.plan.index') }}">查看清单</a>
             </article>
         </aside>
 
         <div class="catalog-main">
             <div class="section-heading">
                 <div>
-                    <p class="hero-kicker">结果列表</p>
-                    <h2>共 {{ $products->total() }} 个候选商品</h2>
+                    <p class="hero-kicker">Products</p>
+                    <h2>{{ $products->total() }} 件商品</h2>
                     <p class="page-copy">{{ ['recommended' => '推荐优先', 'margin' => '毛利优先', 'lead_time' => '交期优先', 'price_low' => '价格从低到高', 'price_high' => '价格从高到低'][$filters['sort']] ?? '推荐优先' }}</p>
                 </div>
             </div>

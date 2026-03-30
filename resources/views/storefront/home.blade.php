@@ -21,32 +21,6 @@
         </div>
 
         <div class="hero-stage">
-            <article class="hero-panel">
-                <div class="hero-panel-head">
-                    <span class="surface-tag">当前意向</span>
-                    <strong>{{ $planSummary['line_count'] }} 个条目</strong>
-                </div>
-
-                <div class="hero-panel-metrics">
-                    <article>
-                        <span>总数量</span>
-                        <strong>{{ $planSummary['total_quantity'] }}</strong>
-                    </article>
-                    <article>
-                        <span>预估金额</span>
-                        <strong>${{ number_format((float) $planSummary['estimated_value'], 2) }}</strong>
-                    </article>
-                    <article>
-                        <span>平均毛利</span>
-                        <strong>{{ number_format((float) $planSummary['average_margin'], 1) }}%</strong>
-                    </article>
-                    <article>
-                        <span>最快交期</span>
-                        <strong>{{ $planSummary['fastest_lead_time'] ?? '--' }} 天</strong>
-                    </article>
-                </div>
-            </article>
-
             <div class="hero-mini-grid">
                 @foreach ($featuredProducts->take(3) as $product)
                     <article class="hero-mini-card">
@@ -98,7 +72,7 @@
     <section class="storefront-section">
         <div class="section-heading">
             <div>
-                <p class="hero-kicker">Featured</p>
+                <p class="hero-kicker">Selections</p>
                 <h2>精选组合</h2>
             </div>
         </div>
@@ -132,64 +106,4 @@
         </div>
     </section>
 
-    <section class="storefront-section">
-        <div class="section-heading">
-            <div>
-                <p class="hero-kicker">Compare</p>
-                <h2>快速比较</h2>
-            </div>
-            <a class="text-link" href="{{ route('storefront.catalog') }}">进入完整目录</a>
-        </div>
-
-        <div class="comparison-shell">
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>比较项</th>
-                        @foreach ($comparisonProducts as $product)
-                            <th>{{ $product->name }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>目标售价</td>
-                        @foreach ($comparisonProducts as $product)
-                            <td>${{ number_format((float) $product->target_price, 2) }}</td>
-                        @endforeach
-                    </tr>
-                    <tr>
-                        <td>毛利率</td>
-                        @foreach ($comparisonProducts as $product)
-                            <td>{{ number_format($product->marginRate(), 1) }}%</td>
-                        @endforeach
-                    </tr>
-                    <tr>
-                        <td>可售库存</td>
-                        @foreach ($comparisonProducts as $product)
-                            <td>{{ $product->availableInventory() }}</td>
-                        @endforeach
-                    </tr>
-                    <tr>
-                        <td>交期</td>
-                        @foreach ($comparisonProducts as $product)
-                            <td>{{ $product->lead_time_days }} 天</td>
-                        @endforeach
-                    </tr>
-                    <tr>
-                        <td>渠道覆盖</td>
-                        @foreach ($comparisonProducts as $product)
-                            <td>{{ $product->listings->pluck('channel.name')->implode(' / ') }}</td>
-                        @endforeach
-                    </tr>
-                    <tr>
-                        <td>评价规模</td>
-                        @foreach ($comparisonProducts as $product)
-                            <td>{{ $product->listings->sum('review_count') }}</td>
-                        @endforeach
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
 @endsection
