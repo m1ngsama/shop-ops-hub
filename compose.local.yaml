@@ -1,0 +1,53 @@
+services:
+  app:
+    image: composer:2
+    working_dir: /app
+    command: sh -lc "composer install && php artisan serve --host=0.0.0.0 --port=8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "127.0.0.1:18080:8000"
+
+  node:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -lc "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    volumes:
+      - .:/app
+    ports:
+      - "127.0.0.1:15173:5173"
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    ports:
+      - "127.0.0.1:13306:3306"
+    volumes:
+      - mysql-local-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:16379:6379"
+    volumes:
+      - redis-local-data:/data
+
+volumes:
+  mysql-local-data:
+  redis-local-data:

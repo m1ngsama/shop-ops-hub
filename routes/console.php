@@ -69,7 +69,7 @@ Artisan::command('ops:check', function () {
     try {
         DB::select('select 1');
         $push('Database', true, (string) config('database.default'));
-    } catch (\Throwable $exception) {
+    } catch (Throwable $exception) {
         $push('Database', false, $exception->getMessage());
     }
 
@@ -77,7 +77,7 @@ Artisan::command('ops:check', function () {
         try {
             app('redis')->connection()->ping();
             $push('Redis', true, (string) config('database.redis.default.host'));
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $push('Redis', false, $exception->getMessage());
         }
     }
@@ -88,7 +88,7 @@ Artisan::command('ops:check', function () {
             $adminEmail !== '' && User::query()->where('email', $adminEmail)->exists(),
             $adminEmail !== '' ? $adminEmail : 'missing'
         );
-    } catch (\Throwable $exception) {
+    } catch (Throwable $exception) {
         $push('Admin Account', false, $exception->getMessage());
     }
 
@@ -98,3 +98,45 @@ Artisan::command('ops:check', function () {
 
     return $hasFailure ? Command::FAILURE : Command::SUCCESS;
 })->purpose('Run a production readiness check for critical runtime configuration');
+
+Artisan::command('dev:check', function () {
+    $checks = [];
+    $push = function (string $name, bool $ok, string $detail) use (&$checks): void {
+        $checks[] = [$name, $ok ? 'OK' : 'FAIL', $detail];
+    };
+
+    $appUrl = trim((string) config('app.url'));
+    $appKey = trim((string) config('app.key'));
+    $queueConnection = (string) config('queue.default');
+    $dbConnection = (string) config('database.default');
+    $adminEmail = trim((string) config('shop_ops.admin_email'));
+
+    $push('APP_ENV', config('app.env') === 'local', (string) config('app.env'));
+    $push('APP_URL', $appUrl !== '', $appUrl !== '' ? $appUrl : 'missing');
+    $push('APP_KEY', $appKey !== '', $appKey !== '' ? 'configured' : 'missing');
+    $push('APP_DEBUG', (bool) config('app.debug'), (bool) config('app.debug') ? 'enabled' : 'disabled');
+    $push('Queue Connection', in_array($queueConnection, ['database', 'redis'], true), $queueConnection);
+
+    try {
+        DB::select('select 1');
+        $push('Database', true, $dbConnection);
+    } catch (Throwable $exception) {
+        $push('Database', false, $exception->getMessage());
+    }
+
+    try {
+        $push(
+            'Admin Account',
+            $adminEmail !== '' && User::query()->where('email', $adminEmail)->exists(),
+            $adminEmail !== '' ? $adminEmail : 'missing'
+        );
+    } catch (Throwable $exception) {
+        $push('Admin Account', false, $exception->getMessage());
+    }
+
+    $this->table(['检查项', '状态', '详情'], $checks);
+
+    $hasFailure = collect($checks)->contains(fn (array $check): bool => $check[1] === 'FAIL');
+
+    return $hasFailure ? Command::FAILURE : Command::SUCCESS;
+})->purpose('Run a local development readiness check');
