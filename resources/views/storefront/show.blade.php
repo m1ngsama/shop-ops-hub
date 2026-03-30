@@ -1,4 +1,4 @@
-@extends('layouts.storefront', ['title' => $product->name.' | 前台选品站'])
+@extends('layouts.storefront', ['title' => $product->name.' | Shop Ops Hub'])
 
 @section('content')
     @php
@@ -21,10 +21,9 @@
             <p class="hero-text">{{ $product->selling_points }}</p>
 
             <div class="pill-row detail-pills">
-                <span class="metric-pill">目标售价 ${{ number_format((float) $product->target_price, 2) }}</span>
-                <span class="metric-pill">毛利 {{ number_format($product->marginRate(), 1) }}%</span>
-                <span class="metric-pill">可售 {{ $product->availableInventory() }}</span>
-                <span class="metric-pill">安全库存 {{ $product->safety_stock }}</span>
+                <span class="metric-pill">售价 ${{ number_format((float) $product->target_price, 2) }}</span>
+                <span class="metric-pill">现货 {{ $product->availableInventory() }}</span>
+                <span class="metric-pill">{{ $product->lead_time_days }} 天发货</span>
             </div>
 
             <div class="rating-row detail-rating-row">
@@ -36,35 +35,35 @@
             <form method="post" action="{{ route('storefront.plan.store', ['product' => $product]) }}" class="detail-form">
                 @csrf
                 <label class="field field-inline">
-                    <span>加入数量</span>
+                    <span>数量</span>
                     <input type="number" min="1" name="quantity" value="{{ max(1, $selectedQuantity ?: 1) }}">
                 </label>
-                <button type="submit" class="primary-button">加入意向清单</button>
-                <a class="secondary-button" href="{{ route('storefront.catalog') }}">返回目录</a>
+                <button type="submit" class="primary-button">加入购物袋</button>
+                <a class="secondary-button" href="{{ route('storefront.catalog') }}">继续购物</a>
             </form>
         </div>
     </section>
 
     <section class="feature-grid feature-grid-4">
         <article class="feature-card compact-card">
-            <span class="surface-tag">Supplier</span>
-            <h2>供应商</h2>
-            <p>{{ $product->supplier?->quality_score ?? '--' }} 分 · {{ $product->supplier?->name ?? '待分配' }}</p>
+            <span class="surface-tag">Material</span>
+            <h2>品牌信息</h2>
+            <p>{{ $product->supplier?->name ?? '精选供应商' }}</p>
         </article>
         <article class="feature-card compact-card">
-            <span class="surface-tag">Channels</span>
-            <h2>渠道</h2>
-            <p>{{ $product->listings->count() }} 个渠道 · {{ $channelCoverage }}</p>
+            <span class="surface-tag">Shipping</span>
+            <h2>配送</h2>
+            <p>预计 {{ $product->lead_time_days }} 天发货</p>
         </article>
         <article class="feature-card compact-card">
             <span class="surface-tag">Reviews</span>
-            <h2>口碑</h2>
-            <p>{{ $reviewCount }} 条评价 · 表现分 {{ number_format($averageScore, 1) }}</p>
+            <h2>用户评价</h2>
+            <p>{{ $reviewCount }} 条评价 · {{ number_format($averageScore, 1) }} 分</p>
         </article>
         <article class="feature-card compact-card">
-            <span class="surface-tag">Stock</span>
-            <h2>库存</h2>
-            <p>{{ $product->availableInventory() > $product->safety_stock ? '库存健康，可直接上架。' : '库存偏紧，建议谨慎放量。' }}</p>
+            <span class="surface-tag">Availability</span>
+            <h2>库存状态</h2>
+            <p>{{ $product->availableInventory() > $product->safety_stock ? '现货充足，可立即购买。' : '库存有限，建议尽快下单。' }}</p>
         </article>
     </section>
 
@@ -72,27 +71,27 @@
         <article class="storefront-panel">
             <div class="section-heading compact-heading">
                 <div>
-                    <p class="hero-kicker">Supply</p>
-                    <h2>核心数据</h2>
+                    <p class="hero-kicker">Details</p>
+                    <h2>商品信息</h2>
                 </div>
             </div>
 
             <div class="summary-stack">
                 <article class="summary-card">
-                    <span>供应商</span>
-                    <strong>{{ $product->supplier?->name ?? '未分配' }}</strong>
+                    <span>品牌</span>
+                    <strong>{{ $product->supplier?->name ?? '精选供应商' }}</strong>
                 </article>
                 <article class="summary-card">
-                    <span>交期</span>
+                    <span>发货时间</span>
                     <strong>{{ $product->lead_time_days }} 天</strong>
                 </article>
                 <article class="summary-card">
-                    <span>平均表现分</span>
+                    <span>评分</span>
                     <strong>{{ number_format($averageScore, 1) }}</strong>
                 </article>
                 <article class="summary-card">
-                    <span>平均转化率</span>
-                    <strong>{{ number_format($averageConversion, 1) }}%</strong>
+                    <span>评价数</span>
+                    <strong>{{ $reviewCount }}</strong>
                 </article>
             </div>
 
@@ -101,10 +100,10 @@
                     <thead>
                         <tr>
                             <th>仓库</th>
-                            <th>在库</th>
-                            <th>占用</th>
-                            <th>在途</th>
-                            <th>预计到仓</th>
+                            <th>现货</th>
+                            <th>锁定</th>
+                            <th>补货中</th>
+                            <th>到货时间</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,8 +124,8 @@
         <article class="storefront-panel">
             <div class="section-heading compact-heading">
                 <div>
-                    <p class="hero-kicker">Channels</p>
-                    <h2>刊登情况</h2>
+                    <p class="hero-kicker">Reviews</p>
+                    <h2>购买参考</h2>
                 </div>
             </div>
 
@@ -137,10 +136,9 @@
                             <span class="surface-tag">{{ $listing->channel->marketplace }}</span>
                             <strong>{{ $listing->channel->name }}</strong>
                         </div>
-                        <p>{{ $listing->external_sku }}</p>
+                        <p>{{ $listing->review_count }} 条评价</p>
                         <div class="pill-row">
-                            <span class="metric-pill">价格 ${{ number_format((float) $listing->price, 2) }}</span>
-                            <span class="metric-pill">转化 {{ number_format((float) $listing->conversion_rate, 1) }}%</span>
+                            <span class="metric-pill">售价 ${{ number_format((float) $listing->price, 2) }}</span>
                             <span class="metric-pill">评分 {{ number_format((float) $listing->performance_score, 1) }}</span>
                         </div>
                     </article>
@@ -153,7 +151,7 @@
         <div class="section-heading">
             <div>
                 <p class="hero-kicker">Styled With</p>
-                <h2>搭配推荐</h2>
+                <h2>搭配购买</h2>
             </div>
         </div>
 
@@ -167,8 +165,8 @@
     <section class="storefront-section">
         <div class="section-heading">
             <div>
-                <p class="hero-kicker">More</p>
-                <h2>更多同类商品</h2>
+                <p class="hero-kicker">You may also like</p>
+                <h2>你可能还喜欢</h2>
             </div>
         </div>
 

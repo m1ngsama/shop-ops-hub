@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? '前台选品站' }}</title>
+    <title>{{ $title ?? 'Shop Ops Hub' }}</title>
     @include('partials.style-entry')
 </head>
 @php
@@ -25,30 +25,30 @@
     <header class="storefront-header">
         <div class="storefront-brand">
             <a href="{{ route('storefront.home') }}">Shop Ops Hub</a>
-            <span>Curated merchandise</span>
+            <span>Daily essentials</span>
         </div>
 
         <nav class="storefront-nav">
             <a href="{{ route('storefront.home') }}" @class(['is-active' => request()->routeIs('storefront.home')])>首页</a>
-            <a href="{{ route('storefront.catalog') }}" @class(['is-active' => request()->routeIs('storefront.catalog') || request()->routeIs('storefront.products.show')])>商品目录</a>
-            <a href="{{ route('storefront.plan.index') }}" @class(['is-active' => request()->routeIs('storefront.plan.*')])>意向清单</a>
+            <a href="{{ route('storefront.catalog') }}" @class(['is-active' => request()->routeIs('storefront.catalog') || request()->routeIs('storefront.products.show')])>商店</a>
+            <a href="{{ route('storefront.plan.index') }}" @class(['is-active' => request()->routeIs('storefront.plan.*')])>购物袋</a>
         </nav>
 
         <form class="storefront-search" method="get" action="{{ route('storefront.catalog') }}">
-            <input type="search" name="search" value="{{ request('search') }}" placeholder="搜索商品名、SKU 或经营卖点">
+            <input type="search" name="search" value="{{ request('search') }}" placeholder="搜索商品">
             <button type="submit">搜索</button>
         </form>
 
         <div class="storefront-actions">
             <a class="plan-badge" href="{{ route('storefront.plan.index') }}">
-                <span>已选 {{ $planSummary['total_quantity'] }} 件</span>
-                <strong>{{ $planSummary['line_count'] }} 个条目</strong>
+                <span>{{ $planSummary['total_quantity'] }} 件商品</span>
+                <strong>购物袋</strong>
             </a>
 
             @auth
-                <a class="secondary-button" href="{{ route('admin.dashboard') }}">进入后台</a>
+                <a class="secondary-button storefront-admin-link" href="{{ route('admin.dashboard') }}">后台</a>
             @else
-                <a class="secondary-button" href="{{ route('login') }}">后台登录</a>
+                <a class="secondary-button storefront-admin-link" href="{{ route('login') }}">登录</a>
             @endauth
         </div>
     </header>
@@ -68,13 +68,13 @@
     <footer class="storefront-footer">
         <div>
             <strong>Shop Ops Hub</strong>
-            <p>Browse. Compare. Choose.</p>
+            <p>Curated daily essentials.</p>
         </div>
 
         <div class="footer-links">
-            <a href="{{ route('storefront.catalog') }}">浏览商品目录</a>
-            <a href="{{ route('storefront.plan.index') }}">查看意向清单</a>
-            <a href="{{ route('login') }}">登录后台</a>
+            <a href="{{ route('storefront.catalog') }}">浏览商品</a>
+            <a href="{{ route('storefront.plan.index') }}">购物袋</a>
+            <a href="{{ route('login') }}">登录</a>
         </div>
     </footer>
 </body>

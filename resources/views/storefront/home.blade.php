@@ -1,22 +1,20 @@
-@extends('layouts.storefront', ['title' => '零售样板站'])
+@extends('layouts.storefront', ['title' => 'Shop Ops Hub'])
 
 @section('content')
     <section class="hero-shell">
         <div class="hero-copy">
-            <p class="hero-kicker">Merchandising Frontend</p>
-            <h1>更干净的商品前台。更直接的购买判断。</h1>
-            <p class="hero-text">围绕商品本身组织浏览、比较和选择，克制、清晰、足够高级。</p>
+            <p class="hero-kicker">New arrivals</p>
+            <h1>为日常购买设计的简洁商店。</h1>
+            <p class="hero-text">精选商品、干净的浏览体验，以及更直接的下单路径。</p>
 
             <div class="pill-row hero-pills">
-                <span class="metric-pill">活跃商品 {{ $heroSummary['active_products'] }}</span>
-                <span class="metric-pill">可售库存 {{ $heroSummary['available_inventory'] }}</span>
-                <span class="metric-pill">平均毛利 {{ number_format($heroSummary['average_margin'], 1) }}%</span>
-                <span class="metric-pill">最快交期 {{ $heroSummary['fastest_lead_time'] }} 天</span>
+                <span class="metric-pill">在售 {{ $heroSummary['active_products'] }}</span>
+                <span class="metric-pill">最快 {{ $heroSummary['fastest_lead_time'] }} 天发货</span>
             </div>
 
             <div class="hero-actions">
-                <a class="primary-button" href="{{ route('storefront.catalog') }}">浏览商品</a>
-                <a class="secondary-button" href="{{ route('storefront.plan.index') }}">意向清单</a>
+                <a class="primary-button" href="{{ route('storefront.catalog') }}">立即选购</a>
+                <a class="secondary-button" href="{{ route('storefront.plan.index') }}">查看购物袋</a>
             </div>
         </div>
 
@@ -26,7 +24,7 @@
                     <article class="hero-mini-card">
                         <span class="surface-tag">{{ $product->category }}</span>
                         <strong>{{ $product->name }}</strong>
-                        <p>{{ $product->sku }} · ${{ number_format((float) $product->target_price, 2) }}</p>
+                        <p>${{ number_format((float) $product->target_price, 2) }}</p>
                     </article>
                 @endforeach
             </div>
@@ -36,10 +34,10 @@
     <section class="storefront-section">
         <div class="section-heading">
             <div>
-                <p class="hero-kicker">Products</p>
-                <h2>现在值得看的商品</h2>
+                <p class="hero-kicker">Shop</p>
+                <h2>本周推荐</h2>
             </div>
-            <a class="text-link" href="{{ route('storefront.catalog') }}">全部商品</a>
+            <a class="text-link" href="{{ route('storefront.catalog') }}">查看全部</a>
         </div>
 
         <div class="product-grid">
@@ -52,18 +50,18 @@
     <section class="storefront-section">
         <div class="section-heading">
             <div>
-                <p class="hero-kicker">Category</p>
-                <h2>从类目开始</h2>
+                <p class="hero-kicker">Categories</p>
+                <h2>按类目浏览</h2>
             </div>
-            <a class="text-link" href="{{ route('storefront.catalog') }}">查看完整目录</a>
+            <a class="text-link" href="{{ route('storefront.catalog') }}">查看全部</a>
         </div>
 
         <div class="category-grid">
             @foreach ($categoryHighlights as $category)
                 <article class="category-card">
                     <span class="surface-tag">{{ $category['name'] }}</span>
-                    <strong>{{ $category['sku_count'] }} 个 SKU</strong>
-                    <p>平均毛利 {{ number_format($category['average_margin'], 1) }}% · 平均交期 {{ $category['average_lead_time'] }} 天</p>
+                    <strong>{{ $category['sku_count'] }} 款商品</strong>
+                    <p>预计 {{ $category['average_lead_time'] }} 天发货</p>
                 </article>
             @endforeach
         </div>
@@ -72,7 +70,7 @@
     <section class="storefront-section">
         <div class="section-heading">
             <div>
-                <p class="hero-kicker">Selections</p>
+                <p class="hero-kicker">Curated sets</p>
                 <h2>精选组合</h2>
             </div>
         </div>
@@ -87,9 +85,8 @@
                     <p>{{ $collection['copy'] }}</p>
 
                     <div class="pill-row">
-                        <span class="metric-pill">组合客单 ${{ number_format((float) $collection['estimated_ticket'], 2) }}</span>
-                        <span class="metric-pill">平均毛利 {{ number_format($collection['average_margin'], 1) }}%</span>
-                        <span class="metric-pill">平均交期 {{ $collection['average_lead_time'] }} 天</span>
+                        <span class="metric-pill">组合价 ${{ number_format((float) $collection['estimated_ticket'], 2) }}</span>
+                        <span class="metric-pill">预计 {{ $collection['average_lead_time'] }} 天发货</span>
                     </div>
 
                     <div class="collection-products">

@@ -3378,6 +3378,19 @@ tbody tr:hover {
     color: rgba(110, 110, 115, 0.88);
 }
 
+.storefront-body .storefront-admin-link {
+    opacity: 0.72;
+}
+
+.storefront-body .plan-badge {
+    min-width: 126px;
+}
+
+.storefront-body .plan-badge strong {
+    font-size: 0.98rem;
+    letter-spacing: -0.02em;
+}
+
 .storefront-body .storefront-footer strong {
     font-size: 1rem;
     letter-spacing: -0.02em;

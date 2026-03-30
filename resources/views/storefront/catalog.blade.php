@@ -1,11 +1,11 @@
-@extends('layouts.storefront', ['title' => '商品目录 | 前台选品站'])
+@extends('layouts.storefront', ['title' => '商店 | Shop Ops Hub'])
 
 @section('content')
     <section class="catalog-hero">
         <div>
-            <p class="hero-kicker">商品目录</p>
-            <h1>找到对的商品，然后更快做决定。</h1>
-            <p class="hero-text">更少干扰，更清晰的筛选和排序。</p>
+            <p class="hero-kicker">Shop</p>
+            <h1>找到适合你的商品。</h1>
+            <p class="hero-text">简洁浏览，快速选择。</p>
         </div>
 
         <div class="catalog-summary">
@@ -14,7 +14,7 @@
                 <strong>{{ $products->total() }}</strong>
             </article>
             <article>
-                <span>已选</span>
+                <span>购物袋</span>
                 <strong>{{ $planSummary['line_count'] }}</strong>
             </article>
             <article>
@@ -41,15 +41,15 @@
             <article class="storefront-panel">
                 <div class="section-heading compact-heading">
                     <div>
-                        <p class="hero-kicker">筛选</p>
-                        <h2>过滤商品</h2>
+                        <p class="hero-kicker">Filter</p>
+                        <h2>筛选</h2>
                     </div>
                 </div>
 
                 <form method="get" class="form-stack">
                     <label class="field">
                         <span>关键词</span>
-                        <input type="search" name="search" value="{{ $filters['search'] }}" placeholder="SKU、商品名、卖点">
+                        <input type="search" name="search" value="{{ $filters['search'] }}" placeholder="商品名">
                     </label>
 
                     <label class="field">
@@ -83,31 +83,27 @@
             <article class="storefront-panel">
                 <div class="section-heading compact-heading">
                     <div>
-                        <p class="hero-kicker">Selection</p>
-                        <h2>当前选择</h2>
+                        <p class="hero-kicker">Bag</p>
+                        <h2>购物袋</h2>
                     </div>
                 </div>
 
                 <div class="summary-stack">
                     <article class="summary-card">
-                        <span>条目数</span>
+                        <span>商品</span>
                         <strong>{{ $planSummary['line_count'] }}</strong>
                     </article>
                     <article class="summary-card">
-                        <span>总数量</span>
+                        <span>数量</span>
                         <strong>{{ $planSummary['total_quantity'] }}</strong>
                     </article>
                     <article class="summary-card">
-                        <span>预估金额</span>
+                        <span>金额</span>
                         <strong>${{ number_format((float) $planSummary['estimated_value'], 2) }}</strong>
-                    </article>
-                    <article class="summary-card">
-                        <span>平均毛利</span>
-                        <strong>{{ number_format((float) $planSummary['average_margin'], 1) }}%</strong>
                     </article>
                 </div>
 
-                <a class="secondary-button full-width" href="{{ route('storefront.plan.index') }}">查看清单</a>
+                <a class="secondary-button full-width" href="{{ route('storefront.plan.index') }}">查看购物袋</a>
             </article>
         </aside>
 
@@ -116,7 +112,7 @@
                 <div>
                     <p class="hero-kicker">Products</p>
                     <h2>{{ $products->total() }} 件商品</h2>
-                    <p class="page-copy">{{ ['recommended' => '推荐优先', 'margin' => '毛利优先', 'lead_time' => '交期优先', 'price_low' => '价格从低到高', 'price_high' => '价格从高到低'][$filters['sort']] ?? '推荐优先' }}</p>
+                    <p class="page-copy">{{ ['recommended' => '推荐优先', 'margin' => '热门优先', 'lead_time' => '发货更快', 'price_low' => '价格从低到高', 'price_high' => '价格从高到低'][$filters['sort']] ?? '推荐优先' }}</p>
                 </div>
             </div>
 
