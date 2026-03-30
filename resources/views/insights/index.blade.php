@@ -92,9 +92,9 @@
     <section class="admin-hero-grid">
         <article class="admin-callout">
             <p class="page-kicker">Business Signals</p>
-            <h2>把财务走势、订单结构、渠道质量和执行轨迹组织成一套可读的经营叙事。</h2>
+            <h2>把关键经营信号压缩成一块可读、可比、可行动的仪表板。</h2>
             <p>
-                可视化页不只负责“展示数据”，而是帮助运营快速理解：钱从哪里来，利润流向哪里，风险接下来会落在哪。
+                重点不是图表数量，而是让营收、毛利、订单结构、渠道收益和库存风险在同一屏建立关联。
             </p>
         </article>
 
@@ -145,24 +145,19 @@
         <article class="panel insight-panel">
             <div class="panel-header">
                 <div>
-                    <p class="page-kicker">财务走势</p>
-                    <h2>近 7 日营收与毛利</h2>
+                    <p class="page-kicker">财务总览</p>
+                    <h2>营收与毛利曲线</h2>
                 </div>
             </div>
 
-            <div class="chart-legend">
-                <span><i class="legend-dot revenue-dot"></i> 营收</span>
-                <span><i class="legend-dot profit-dot"></i> 毛利</span>
-            </div>
-
-            <div class="sparkline-shell">
+            <div class="sparkline-shell sparkline-shell-hero">
                 <svg class="sparkline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                     <polyline class="sparkline-path revenue-path" points="{{ $revenuePoints }}"></polyline>
                     <polyline class="sparkline-path profit-path" points="{{ $profitPoints }}"></polyline>
                 </svg>
             </div>
 
-            <div class="trend-grid">
+            <div class="trend-grid trend-grid-tight">
                 @foreach ($financialTrend as $point)
                     <article>
                         <span>{{ $point['label'] }}</span>
@@ -176,33 +171,108 @@
         <article class="panel insight-panel">
             <div class="panel-header">
                 <div>
+                    <p class="page-kicker">结构分布</p>
+                    <h2>订单状态与利润拆解</h2>
+                </div>
+            </div>
+
+            <div class="insight-dual-stack">
+                <div class="donut-layout">
+                    <div class="donut-ring donut-ring-static">
+                        <div class="donut-core">
+                            <strong>{{ $totalOrders }}</strong>
+                            <span>订单总量</span>
+                        </div>
+                    </div>
+
+                    <div class="legend-list compact-legend-list">
+                        @foreach ($statusSlices as $slice)
+                            <article class="legend-row">
+                                <div class="legend-main">
+                                    <i class="legend-dot tone-{{ $slice['tone'] }}"></i>
+                                    <strong>{{ $statusMap[$slice['status']] ?? $slice['status'] }}</strong>
+                                </div>
+                                <div class="row-meta">
+                                    <span>{{ $slice['total'] }} 单</span>
+                                    <span>{{ number_format($slice['share'], 1) }}%</span>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="composition-shell composition-shell-tight">
+                    <div class="composition-bar">
+                        @foreach ($breakdownSegments as $segment)
+                            <span class="composition-segment {{ $segment['size_class'] }} tone-{{ $segment['tone'] }}"></span>
+                        @endforeach
+                    </div>
+
+                    <div class="legend-list compact-legend-list">
+                        @foreach ($breakdownSegments as $segment)
+                            <article class="legend-row">
+                                <div class="legend-main">
+                                    <i class="legend-dot tone-{{ $segment['tone'] }}"></i>
+                                    <strong>{{ $segment['label'] }}</strong>
+                                </div>
+                                <div class="row-meta">
+                                    <span>${{ number_format($segment['value'], 2) }}</span>
+                                    <span>{{ number_format($segment['percentage'], 1) }}%</span>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="panel-grid panel-grid-2">
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">财务走势</p>
+                    <h2>近 7 日营收与毛利</h2>
+                </div>
+            </div>
+
+            <div class="share-stack">
+                @foreach ($financialTrend as $point)
+                    <article class="share-row">
+                        <div class="share-head">
+                            <strong>{{ $point['label'] }}</strong>
+                            <span>${{ number_format($point['profit'], 0) }}</span>
+                        </div>
+                        <div class="share-bar">
+                            <span class="share-bar-md"></span>
+                        </div>
+                        <p class="table-subtext">营收 ${{ number_format($point['revenue'], 0) }}</p>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
                     <p class="page-kicker">订单结构</p>
                     <h2>状态分布</h2>
                 </div>
             </div>
 
-            <div class="donut-layout">
-                <div class="donut-ring donut-ring-static">
-                    <div class="donut-core">
-                        <strong>{{ $totalOrders }}</strong>
-                        <span>订单总量</span>
-                    </div>
-                </div>
-
-                <div class="legend-list">
-                    @foreach ($statusSlices as $slice)
-                        <article class="legend-row">
-                            <div class="legend-main">
-                                <i class="legend-dot tone-{{ $slice['tone'] }}"></i>
-                                <strong>{{ $statusMap[$slice['status']] ?? $slice['status'] }}</strong>
-                            </div>
-                            <div class="row-meta">
-                                <span>{{ $slice['total'] }} 单</span>
-                                <span>{{ number_format($slice['share'], 1) }}%</span>
-                            </div>
-                        </article>
-                    @endforeach
-                </div>
+            <div class="share-stack">
+                @foreach ($statusSlices as $slice)
+                    <article class="share-row">
+                        <div class="share-head">
+                            <strong>{{ $statusMap[$slice['status']] ?? $slice['status'] }}</strong>
+                            <span>{{ number_format($slice['share'], 1) }}%</span>
+                        </div>
+                        <div class="share-bar">
+                            <span class="{{ $slice['share'] >= 40 ? 'share-bar-xl' : ($slice['share'] >= 25 ? 'share-bar-lg' : ($slice['share'] >= 12 ? 'share-bar-md' : 'share-bar-sm')) }}"></span>
+                        </div>
+                        <p class="table-subtext">{{ $slice['total'] }} 单</p>
+                    </article>
+                @endforeach
             </div>
         </article>
     </section>

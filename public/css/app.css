@@ -3449,6 +3449,65 @@ tbody tr:hover {
     color: var(--sf-text);
 }
 
+.bar-chart-hero {
+    min-height: 260px;
+    align-items: end;
+}
+
+.pipeline-grid-dense {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sparkline-shell-hero {
+    min-height: 240px;
+}
+
+.trend-grid-tight {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.insight-dual-stack {
+    display: grid;
+    gap: 18px;
+}
+
+.composition-shell-tight,
+.compact-legend-list {
+    margin-top: 0;
+}
+
+.insight-panel .share-row {
+    padding: 18px 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.insight-panel .share-bar {
+    margin-top: 10px;
+}
+
+.insight-panel .share-bar span {
+    display: block;
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(0, 113, 227, 0.85), rgba(90, 200, 250, 0.75));
+}
+
+@media (max-width: 1180px) {
+    .trend-grid-tight,
+    .pipeline-grid-dense {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .trend-grid-tight,
+    .pipeline-grid-dense {
+        grid-template-columns: 1fr;
+    }
+}
+
 .storefront-body .catalog-hero,
 .storefront-body .detail-hero {
     padding: 34px;

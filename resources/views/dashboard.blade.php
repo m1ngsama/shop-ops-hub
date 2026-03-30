@@ -79,31 +79,6 @@
         </div>
     </section>
 
-    <section class="admin-hero-grid admin-hero-grid-compact">
-        <article class="admin-callout">
-            <p class="page-kicker">Operating Focus</p>
-            <h2>先判断现在最该处理什么，再进入商品、渠道和订单的具体执行页面。</h2>
-            <p>
-                总览页优先承担分诊功能，把库存风险、同步阻塞、履约压力和增长机会压缩到同一首屏，减少进入系统后的搜索成本。
-            </p>
-        </article>
-
-        <article class="admin-stat-ribbon">
-            <div>
-                <span>近 7 日销售额</span>
-                <strong>${{ number_format($summary['weekly_revenue'], 0) }}</strong>
-            </div>
-            <div>
-                <span>待处理预警</span>
-                <strong>{{ $summary['low_stock_count'] + $summary['queued_sync_runs'] }}</strong>
-            </div>
-            <div>
-                <span>活跃渠道</span>
-                <strong>{{ $summary['healthy_channels'] }}</strong>
-            </div>
-        </article>
-    </section>
-
     <section class="metrics-grid">
         <article class="metric-card">
             <span>近 7 日销售额</span>
@@ -142,25 +117,48 @@
     </section>
 
     <section class="panel-grid panel-grid-2">
-        <article class="panel">
+        <article class="panel insight-panel">
             <div class="panel-header">
                 <div>
-                    <p class="page-kicker">履约节奏</p>
-                    <h2>订单管道</h2>
+                    <p class="page-kicker">成交趋势</p>
+                    <h2>近 7 日销售脉冲</h2>
                 </div>
             </div>
 
-            <div class="pipeline-grid">
-                @foreach ($orderPipeline as $item)
-                    <article class="pipeline-card">
-                        <span class="status-chip tone-{{ $item['tone'] }}">{{ $item['label'] }}</span>
-                        <strong>{{ $item['count'] }} 单</strong>
-                        <p>对应销售额 ${{ number_format($item['revenue'], 2) }}</p>
-                    </article>
+            <div class="bar-chart bar-chart-hero">
+                @foreach ($revenueTrend as $point)
+                    <div class="bar-item">
+                        <div class="bar-rail">
+                            <div class="bar-fill {{ $barClassMap[$loop->index] }}"></div>
+                        </div>
+                        <strong>${{ number_format($point['revenue'], 0) }}</strong>
+                        <span>{{ $point['label'] }}</span>
+                    </div>
                 @endforeach
             </div>
         </article>
 
+        <article class="panel insight-panel">
+            <div class="panel-header">
+                <div>
+                    <p class="page-kicker">执行热区</p>
+                    <h2>订单与任务状态</h2>
+                </div>
+            </div>
+
+            <div class="pipeline-grid pipeline-grid-dense">
+                @foreach ($orderPipeline as $item)
+                    <article class="pipeline-card">
+                        <span class="status-chip tone-{{ $item['tone'] }}">{{ $item['label'] }}</span>
+                        <strong>{{ $item['count'] }} 单</strong>
+                        <p>销售额 ${{ number_format($item['revenue'], 0) }}</p>
+                    </article>
+                @endforeach
+            </div>
+        </article>
+    </section>
+
+    <section class="panel-grid panel-grid-2">
         <article class="panel">
             <div class="panel-header">
                 <div>
@@ -221,20 +219,30 @@
         <article class="panel">
             <div class="panel-header">
                 <div>
-                    <p class="page-kicker">成交趋势</p>
-                    <h2>近 7 日销售脉冲</h2>
+                    <p class="page-kicker">成交机会</p>
+                    <h2>品类与渠道关注点</h2>
                 </div>
             </div>
 
-            <div class="bar-chart">
-                @foreach ($revenueTrend as $point)
-                    <div class="bar-item">
-                        <div class="bar-rail">
-                            <div class="bar-fill {{ $barClassMap[$loop->index] }}"></div>
+            <div class="action-list">
+                @foreach ($categoryPerformance->take(3) as $category)
+                    <article class="action-item">
+                        <div>
+                            <strong>{{ $category->category }}</strong>
+                            <p>{{ $category->sku_count }} 个 SKU · 销售额 ${{ number_format((float) $category->revenue, 2) }}</p>
                         </div>
-                        <strong>${{ number_format($point['revenue'], 0) }}</strong>
-                        <span>{{ $point['label'] }}</span>
-                    </div>
+                        <span class="status-chip tone-info">观察中</span>
+                    </article>
+                @endforeach
+
+                @foreach ($channelHealth->take(2) as $health)
+                    <article class="action-item">
+                        <div>
+                            <strong>{{ $health['channel']->name }}</strong>
+                            <p>{{ $health['channel']->marketplace }} · 收入 ${{ number_format($health['revenue'], 2) }}</p>
+                        </div>
+                        <span class="status-chip tone-{{ $health['is_stale'] ? 'warning' : 'success' }}">{{ $health['is_stale'] ? '需关注' : '稳定' }}</span>
+                    </article>
                 @endforeach
             </div>
         </article>

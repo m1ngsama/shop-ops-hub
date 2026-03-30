@@ -24,7 +24,7 @@
                     <article class="hero-mini-card">
                         <span class="surface-tag">{{ $product->category }}</span>
                         <strong>{{ $product->name }}</strong>
-                        <p>${{ number_format((float) $product->target_price, 2) }}</p>
+                        <p>From ${{ number_format((float) $product->target_price, 2) }}</p>
                     </article>
                 @endforeach
             </div>
@@ -82,7 +82,7 @@
                         <span class="surface-tag">{{ $collection['tag'] }}</span>
                         <strong>{{ $collection['title'] }}</strong>
                     </div>
-                    <p>{{ $collection['copy'] }}</p>
+                    <p>{{ str_replace(['内容投放', '复购路线', '居家生活'], ['轻松搭配', '日常回购', '居家灵感'], $collection['copy']) }}</p>
 
                     <div class="pill-row">
                         <span class="metric-pill">组合价 ${{ number_format((float) $collection['estimated_ticket'], 2) }}</span>
